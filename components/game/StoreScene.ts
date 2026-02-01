@@ -22,7 +22,7 @@ export class StoreScene extends Phaser.Scene {
   private npcShadow!: Phaser.GameObjects.Image;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: { [key: string]: Phaser.Input.Keyboard.Key };
-  private eKey!: Phaser.Input.Keyboard.Key;
+  private spaceKey!: Phaser.Input.Keyboard.Key;
   private pressBubble!: Phaser.GameObjects.Container;
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
   private queueSpot!: Phaser.GameObjects.Image;
@@ -146,7 +146,7 @@ export class StoreScene extends Phaser.Scene {
     this.keys = this.input.keyboard!.addKeys("W,A,S,D") as {
       [key: string]: Phaser.Input.Keyboard.Key;
     };
-    this.eKey = this.input.keyboard!.addKey("E");
+    this.spaceKey = this.input.keyboard!.addKey("SPACE");
 
     this.pressBubble = this.createPressBubble();
     this.pressBubble.setVisible(false);
@@ -213,7 +213,7 @@ export class StoreScene extends Phaser.Scene {
     this.pressBubble.setPosition(this.queuePoint.x, this.queuePoint.y - 26);
     this.questMarker.setPosition(this.npcSprite.x, this.npcSprite.y - 42 + Math.sin(time / 250) * 4);
     
-    if (nearNpc && Phaser.Input.Keyboard.JustDown(this.eKey)) {
+    if (nearNpc && Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
       this.onNpcInteract();
     }
   }
@@ -223,12 +223,12 @@ export class StoreScene extends Phaser.Scene {
     const bg = this.add.graphics();
     bg.fillStyle(0xffffff, 1);
     bg.lineStyle(2, 0x000000, 0.15);
-    bg.fillRoundedRect(-36, -14, 72, 24, 8);
-    bg.strokeRoundedRect(-36, -14, 72, 24, 8);
+    bg.fillRoundedRect(-60, -18, 120, 36, 10);
+    bg.strokeRoundedRect(-60, -18, 120, 36, 10);
 
-    const text = this.add.text(-26, -10, "Press E", {
+    const text = this.add.text(-52, -12, "Press Space", {
       fontFamily: "Trebuchet MS",
-      fontSize: "12px",
+      fontSize: "18px",
       color: "#2D2D2D",
       fontStyle: "bold",
     });

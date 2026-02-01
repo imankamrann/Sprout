@@ -43,6 +43,7 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   const [dialogueIndex, setDialogueIndex] = useState(0);
   const [confettiOn, setConfettiOn] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [showTutorial, setShowTutorial] = useState(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
@@ -131,6 +132,36 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
         </button>
         <div className="content-title">{levelTitle}</div>
       </div>
+
+      {/* Tutorial Popup */}
+      {showTutorial && (
+        <div className="tutorial-overlay">
+          <div className="tutorial-card">
+            <div className="tutorial-icon">🎮</div>
+            <h2 className="tutorial-title">How to Play</h2>
+            <div className="tutorial-steps">
+              <div className="tutorial-step">
+                <div className="step-icon">⬆️⬇️⬅️➡️</div>
+                <div className="step-text">Use <strong>Arrow Keys</strong> or <strong>WASD</strong> to walk around</div>
+              </div>
+              <div className="tutorial-step">
+                <div className="step-icon">🧑‍💼</div>
+                <div className="step-text">Walk towards the <strong>cashier at the desk</strong></div>
+              </div>
+              <div className="tutorial-step">
+                <div className="step-icon">⌨️</div>
+                <div className="step-text">Press <strong>Space Bar</strong> to start shopping!</div>
+              </div>
+            </div>
+            <button 
+              className="tutorial-btn"
+              onClick={() => setShowTutorial(false)}
+            >
+              Got it! Let's go 🚀
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Layout: Game on left, Quest panel on right */}
       <div className={`game-layout max-w-7xl mx-auto ${showQuestPanel ? 'with-panel' : ''}`}>
