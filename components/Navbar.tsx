@@ -1,6 +1,7 @@
 import React from 'react';
 import { User } from '../types';
 import { SproutLogo } from './SproutLogo';
+import coinIcon from '../assets/Coin.svg';
 
 interface NavbarProps {
   user: User;
@@ -16,7 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onHome }) => {
       <div className="flex items-center gap-4">
         {/* Coins */}
         <div className="flex items-center gap-1">
-          <span className="text-xl">🪙</span>
+          <img src={coinIcon} alt="Coins" className="w-6 h-6" />
           <span className="font-bold text-sprout-purple">{user.coins}</span>
         </div>
         

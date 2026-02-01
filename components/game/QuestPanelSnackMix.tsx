@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { snackItems, SnackItem, SnackCategory, questCopy } from "../../data/questSnackMix";
 import { CoachHint } from "./CoachHint";
+import coinIcon from "../../assets/Coin.svg";
 
 interface QuestPanelSnackMixProps {
   stage: "SHOP" | "TWIST" | "CHECKOUT" | "SCAM" | "RESULT";
@@ -302,7 +303,7 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
         
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-value">🪙 {finalCoinsLeft}</div>
+            <div className="stat-value"><img src={coinIcon} alt="Coins" className="inline-coin" /> {finalCoinsLeft}</div>
             <div className="stat-label">{questCopy.result.stats.coinsLeft}</div>
           </div>
           <div className="stat-card">
@@ -337,7 +338,7 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
       </div>
       
       <div className="budget-display">
-        <div className="budget-coin">🪙</div>
+        <div className="budget-coin"><img src={coinIcon} alt="Coins" /></div>
         <div className="budget-amount">{coinsLeft}</div>
         <div className="budget-label">coins left</div>
         {coinsLeft < 2 && <div className="budget-warning">⚠️ Save some!</div>}
@@ -369,7 +370,7 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
           >
             <div className="item-icon">{item.icon}</div>
             <div className="item-name">{item.name}</div>
-            <div className="item-cost">{item.cost} 🪙</div>
+            <div className="item-cost">{item.cost} <img src={coinIcon} alt="Coins" className="inline-coin" /></div>
           </button>
         ))}
       </div>

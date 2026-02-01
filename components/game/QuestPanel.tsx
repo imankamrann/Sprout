@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { getQuestByLevel, QuestData, QuestItem, ItemCategory } from "../../data/quests";
 import { CoachHint } from "./CoachHint";
+import coinIcon from "../../assets/Coin.svg";
 
 interface QuestPanelProps {
   levelId: number;
@@ -330,14 +331,14 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
           {quest.result.questComplete}
         </div>
         
-        <div className="badge-display">
-          <div className="badge-icon">{quest.result.badgeName}</div>
-          <div className="badge-label">{quest.result.badgeTitle}</div>
-        </div>
-        
-        <div className="stats-grid">
+        <div className="result-rewards">
+          <div className="badge-display">
+            <div className="badge-icon">{quest.result.badgeName}</div>
+            <div className="badge-label">{quest.result.badgeTitle}</div>
+          </div>
+          
           <div className="stat-card">
-            <div className="stat-value">🪙 +{coinsEarned}</div>
+            <div className="stat-value"><img src={coinIcon} alt="Coins" className="inline-coin" /> +{coinsEarned}</div>
             <div className="stat-label">Coins earned</div>
           </div>
         </div>
@@ -371,7 +372,7 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
       </div>
       
       <div className="budget-display">
-        <div className="budget-coin">🪙</div>
+        <div className="budget-coin"><img src={coinIcon} alt="Coins" /></div>
         <div className="budget-amount">{coinsLeft}</div>
         <div className="budget-label">coins left</div>
         {coinsLeft < 2 && <div className="budget-warning">⚠️ Save some!</div>}
@@ -399,7 +400,7 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
           >
             <div className="item-icon">{item.icon}</div>
             <div className="item-name">{item.name}</div>
-            <div className="item-cost">{item.cost} 🪙</div>
+            <div className="item-cost">{item.cost} <img src={coinIcon} alt="Coins" className="inline-coin" /></div>
           </button>
         ))}
       </div>

@@ -49,6 +49,20 @@
   min-width: 400px;
 }
 
+/* Inline coin icon styling */
+.phaser-game-arena .inline-coin {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+.phaser-game-arena .budget-coin img {
+  width: 32px;
+  height: 32px;
+}
+
 .phaser-game-arena .quest-panel-container .quest-card {
   max-width: 100%;
   max-height: calc(100vh - 160px);
@@ -837,8 +851,8 @@
 }
 
 .phaser-game-arena .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  justify-content: center;
   gap: 12px;
   margin: 16px 0;
 }
