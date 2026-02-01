@@ -906,16 +906,30 @@
   border-color: var(--purple);
 }
 
-.phaser-game-arena .category-tab.active.fuel {
+.phaser-game-arena .category-tab.active.fuel,
+.phaser-game-arena .category-tab.active.need {
   background: #E8F5E9;
   border-color: var(--green);
   color: var(--green-dark);
 }
 
-.phaser-game-arena .category-tab.active.treat {
+.phaser-game-arena .category-tab.active.treat,
+.phaser-game-arena .category-tab.active.want {
   background: #FFF8E1;
   border-color: var(--yellow);
   color: #A68A2B;
+}
+
+.phaser-game-arena .category-tab.active.earn {
+  background: #E3F2FD;
+  border-color: var(--blue);
+  color: #1976D2;
+}
+
+.phaser-game-arena .category-tab.active.save {
+  background: #F3E5F5;
+  border-color: var(--purple);
+  color: var(--purple-dark);
 }
 
 .phaser-game-arena .category-hint {
@@ -954,14 +968,26 @@
   transform: translateY(1px);
 }
 
-.phaser-game-arena .item-card.fuel {
+.phaser-game-arena .item-card.fuel,
+.phaser-game-arena .item-card.need {
   background: #F1F8F1;
   border-color: var(--green);
 }
 
-.phaser-game-arena .item-card.treat {
+.phaser-game-arena .item-card.treat,
+.phaser-game-arena .item-card.want {
   background: #FFF9F0;
   border-color: var(--yellow);
+}
+
+.phaser-game-arena .item-card.earn {
+  background: #F0F4FF;
+  border-color: var(--blue);
+}
+
+.phaser-game-arena .item-card.save {
+  background: #F8F0FF;
+  border-color: var(--purple);
 }
 
 .phaser-game-arena .item-icon {
@@ -1039,14 +1065,26 @@
   transition: all 0.1s;
 }
 
-.phaser-game-arena .backpack-chip.fuel {
+.phaser-game-arena .backpack-chip.fuel,
+.phaser-game-arena .backpack-chip.need {
   background: #F1F8F1;
   border-color: var(--green);
 }
 
-.phaser-game-arena .backpack-chip.treat {
+.phaser-game-arena .backpack-chip.treat,
+.phaser-game-arena .backpack-chip.want {
   background: #FFF9F0;
   border-color: var(--yellow);
+}
+
+.phaser-game-arena .backpack-chip.earn {
+  background: #F0F4FF;
+  border-color: var(--blue);
+}
+
+.phaser-game-arena .backpack-chip.save {
+  background: #F8F0FF;
+  border-color: var(--purple);
 }
 
 .phaser-game-arena .backpack-chip.selected {
@@ -1105,20 +1143,40 @@
   background: var(--white);
 }
 
-.phaser-game-arena .slot.fuel {
+.phaser-game-arena .slot.fuel,
+.phaser-game-arena .slot.need {
   border-color: var(--green);
 }
 
-.phaser-game-arena .slot.fuel.filled {
+.phaser-game-arena .slot.fuel.filled,
+.phaser-game-arena .slot.need.filled {
   background: #F1F8F1;
 }
 
-.phaser-game-arena .slot.treat {
+.phaser-game-arena .slot.treat,
+.phaser-game-arena .slot.want {
   border-color: var(--yellow);
 }
 
-.phaser-game-arena .slot.treat.filled {
+.phaser-game-arena .slot.treat.filled,
+.phaser-game-arena .slot.want.filled {
   background: #FFF9F0;
+}
+
+.phaser-game-arena .slot.earn {
+  border-color: var(--blue);
+}
+
+.phaser-game-arena .slot.earn.filled {
+  background: #F0F4FF;
+}
+
+.phaser-game-arena .slot.save {
+  border-color: var(--purple);
+}
+
+.phaser-game-arena .slot.save.filled {
+  background: #F8F0FF;
 }
 
 .phaser-game-arena .slot-label {

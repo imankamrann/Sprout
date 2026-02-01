@@ -7,7 +7,7 @@ import { PhaserGameArena } from './components/game/PhaserGameArena';
 import { AuthScreen } from './components/AuthScreen';
 
 // Levels that use the Phaser-based game arena (store/shopping quests)
-const PHASER_LEVELS = [1];
+const PHASER_LEVELS = [1, 2, 3, 4];
 
 const MOCK_USER: User = {
   username: 'Guest',

@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { snackItems, SnackItem, SnackCategory, questCopy } from "../../data/questSnackMix";
+import { getQuestByLevel, QuestData, QuestItem, ItemCategory } from "../../data/quests";
 import { CoachHint } from "./CoachHint";
 
-interface QuestPanelSnackMixProps {
+interface QuestPanelProps {
+  levelId: number;
   stage: "SHOP" | "TWIST" | "CHECKOUT" | "SCAM" | "RESULT";
-  onStageChange: (stage: QuestPanelSnackMixProps["stage"] | "WORLD") => void;
+  onStageChange: (stage: QuestPanelProps["stage"] | "WORLD") => void;
   onResult: (result: {
     coinsLeft: number;
     xpGained: number;
@@ -14,39 +15,53 @@ interface QuestPanelSnackMixProps {
   onPlaySound: (type: "click" | "coin" | "success") => void;
 }
 
-type SlotId = "fuel1" | "fuel2" | "treat";
+type SlotId = "slot1" | "slot2" | "slot3";
 
 type SlotState = {
-  fuel1: SnackItem | null;
-  fuel2: SnackItem | null;
-  treat: SnackItem | null;
+  slot1: QuestItem | null;
+  slot2: QuestItem | null;
+  slot3: QuestItem | null;
 };
 
-export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
+export const QuestPanel: React.FC<QuestPanelProps> = ({
+  levelId,
   stage,
   onStageChange,
   onResult,
   onPlaySound,
 }) => {
-  const items = useMemo(() => snackItems, []);
-  const [category, setCategory] = useState<SnackCategory>("fuel");
-  const [backpack, setBackpack] = useState<SnackItem[]>([]);
+  const quest = useMemo(() => getQuestByLevel(levelId), [levelId]);
+  
+  // Fallback if quest not found
+  if (!quest) {
+    return (
+      <div className="quest-card">
+        <div className="quest-header">Quest not found for level {levelId}</div>
+        <button className="confirm-btn" onClick={() => onStageChange("WORLD")}>Go Back</button>
+      </div>
+    );
+  }
+
+  const items = quest.items;
+  const categories = [...new Set(items.map(i => i.category))];
+  const [category, setCategory] = useState<ItemCategory>(categories[0] || "need");
+  const [backpack, setBackpack] = useState<QuestItem[]>([]);
   const [selectedBackpack, setSelectedBackpack] = useState<number | null>(null);
-  const [slots, setSlots] = useState<SlotState>({ fuel1: null, fuel2: null, treat: null });
+  const [slots, setSlots] = useState<SlotState>({ slot1: null, slot2: null, slot3: null });
   const [message, setMessage] = useState<string | null>(null);
   const [coachMessage, setCoachMessage] = useState<string | null>(null);
   const [twistShown, setTwistShown] = useState(false);
   const [scamChoice, setScamChoice] = useState<"pay" | "ask" | null>(null);
-  const [twistChoice, setTwistChoice] = useState<"fuel" | "treat" | null>(null);
+  const [twistChoice, setTwistChoice] = useState<"option1" | "option2" | null>(null);
   const [feeAcknowledged, setFeeAcknowledged] = useState(false);
 
   const visibleItems = items.filter((item) => item.category === category).slice(0, 3);
 
-  const allChosen = [...backpack, slots.fuel1, slots.fuel2, slots.treat].filter(Boolean) as SnackItem[];
+  const allChosen = [...backpack, slots.slot1, slots.slot2, slots.slot3].filter(Boolean) as QuestItem[];
   const total = allChosen.reduce((sum, item) => sum + item.cost, 0);
-  const coinsLeft = 20 - total;
-  const totalWithFee = total + 2;
-  const finalCoinsLeft = Math.max(0, 20 - totalWithFee);
+  const coinsLeft = quest.budget - total;
+  const totalWithFee = total + quest.fee.amount;
+  const finalCoinsLeft = Math.max(0, quest.budget - totalWithFee);
 
   // Trigger emergency twist after first item is picked
   useEffect(() => {
@@ -62,15 +77,41 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
     setTimeout(() => setCoachMessage(null), 2200);
   };
 
-  const addToBackpack = (item: SnackItem) => {
+  const getCategoryLabel = (cat: ItemCategory): string => {
+    switch (cat) {
+      case "need": return "Needs";
+      case "want": return "Wants";
+      case "earn": return "Supplies";
+      case "save": return "Savings";
+      default: return cat;
+    }
+  };
+
+  const getCategoryIcon = (cat: ItemCategory): string => {
+    switch (cat) {
+      case "need": return "📦";
+      case "want": return "⭐";
+      case "earn": return "💼";
+      case "save": return "🐷";
+      default: return "📦";
+    }
+  };
+
+  const addToBackpack = (item: QuestItem) => {
     if (coinsLeft - item.cost < 0) {
-      setMessage(questCopy.coachHints.overBudget);
+      setMessage(quest.coachHints.overBudget);
       return;
     }
-    const fuelCount = [slots.fuel1, slots.fuel2].filter(Boolean).length;
-    if (item.category === "treat" && fuelCount < 2) {
-      showCoach(questCopy.coachHints.fuelFirst);
+    const slot1Cat = quest.slotConfig.slot1.category;
+    const slot2Cat = quest.slotConfig.slot2.category;
+    const slot1Filled = slots.slot1 !== null;
+    const slot2Filled = slots.slot2 !== null;
+    
+    // Check if trying to pick slot3 category before filling slots 1 and 2
+    if (item.category === quest.slotConfig.slot3.category && (!slot1Filled || !slot2Filled)) {
+      showCoach(quest.coachHints.needMore);
     }
+    
     onPlaySound("click");
     setMessage(null);
     setBackpack((prev) => [...prev, item]);
@@ -81,14 +122,10 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
     const item = backpack[selectedBackpack];
     if (!item) return;
 
-    const requiresFuel = slot === "fuel1" || slot === "fuel2";
-    if (requiresFuel && item.category !== "fuel") {
-      setMessage("Fuel slots need Fuel snacks.");
-      showCoach(questCopy.coachHints.slotMismatch);
-      return;
-    }
-    if (slot === "treat" && item.category !== "treat") {
-      setMessage("Treat slot needs Treat snacks.");
+    const slotConfig = quest.slotConfig[slot];
+    if (item.category !== slotConfig.category) {
+      setMessage(`${slotConfig.label} needs ${getCategoryLabel(slotConfig.category)} items.`);
+      showCoach(quest.coachHints.slotMismatch);
       return;
     }
 
@@ -108,22 +145,22 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
   };
 
   const startCheckout = () => {
-    if (!slots.fuel1 || !slots.fuel2) {
-      setMessage(questCopy.coachHints.needTwoFuel);
-      showCoach(questCopy.coachHints.fuelFirst);
+    if (!slots.slot1 || !slots.slot2) {
+      setMessage(quest.coachHints.needMore);
+      showCoach(quest.coachHints.default);
       return;
     }
     if (coinsLeft < 0) {
-      setMessage(questCopy.coachHints.overBudget);
+      setMessage(quest.coachHints.overBudget);
       return;
     }
     onStageChange("CHECKOUT");
   };
 
   const applyFee = () => {
-    if (totalWithFee > 20) {
-      setMessage(questCopy.fee.failMessage);
-      showCoach(questCopy.fee.hint);
+    if (totalWithFee > quest.budget) {
+      setMessage(quest.fee.failMessage);
+      showCoach(quest.fee.hint);
       setFeeAcknowledged(false);
       onStageChange("SHOP");
       return;
@@ -132,13 +169,11 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
     onStageChange("SCAM");
   };
 
-  const handleTwist = (choice: "fuel" | "treat") => {
+  const handleTwist = (choice: "option1" | "option2") => {
     setTwistChoice(choice);
-    if (choice === "fuel") {
-      setMessage(questCopy.emergency.reactions.fuel);
-    } else {
-      setMessage(questCopy.emergency.reactions.treat);
-      showCoach(questCopy.coachHints.fuelFirst);
+    setMessage(quest.emergency.reactions[choice]);
+    if (choice !== quest.emergency.correctOption) {
+      showCoach(quest.coachHints.default);
     }
     onPlaySound("click");
     setTimeout(() => {
@@ -150,11 +185,7 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
   const handleScam = (choice: "pay" | "ask") => {
     setScamChoice(choice);
     onPlaySound("click");
-    if (choice === "pay") {
-      setMessage(questCopy.scam.reactions.pay);
-    } else {
-      setMessage(questCopy.scam.reactions.ask);
-    }
+    setMessage(quest.scam.reactions[choice]);
   };
 
   const finishQuest = () => {
@@ -180,22 +211,22 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
           <span className="quest-icon">🚨</span>
           Surprise!
         </div>
-        <div className="speaker-pill">{questCopy.emergency.speaker}</div>
+        <div className="speaker-pill">{quest.emergency.speaker}</div>
         <div className="speech-bubble speech-bubble-large">
-          {questCopy.emergency.message}
+          {quest.emergency.message}
         </div>
         {!twistChoice ? (
           <div className="choice-stack">
-            <button className="choice-btn choice-btn-fuel" onClick={() => handleTwist("fuel")}>
-              🍎 {questCopy.emergency.choices.fuel}
+            <button className="choice-btn choice-btn-fuel" onClick={() => handleTwist("option1")}>
+              ✅ {quest.emergency.choices.option1}
             </button>
-            <button className="choice-btn choice-btn-treat" onClick={() => handleTwist("treat")}>
-              🍬 {questCopy.emergency.choices.treat}
+            <button className="choice-btn choice-btn-treat" onClick={() => handleTwist("option2")}>
+              ❓ {quest.emergency.choices.option2}
             </button>
           </div>
         ) : (
           <div className="reaction-card">
-            <div className="reaction-icon">{twistChoice === "fuel" ? "✅" : "💭"}</div>
+            <div className="reaction-icon">{twistChoice === quest.emergency.correctOption ? "✅" : "💭"}</div>
             <div className="reaction-text">{message}</div>
           </div>
         )}
@@ -211,16 +242,16 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
           <span className="quest-icon">🧾</span>
           Checkout
         </div>
-        <CoachHint text={questCopy.fee.hint} avatar="👩‍🏫" />
+        <CoachHint text={quest.fee.hint} avatar="👩‍🏫" />
         
         <div className="fee-breakdown">
           <div className="fee-row">
-            <span>Snacks total:</span>
+            <span>Items total:</span>
             <span className="fee-amount">{total} coins</span>
           </div>
           <div className="fee-row fee-row-highlight">
-            <span>⚠️ {questCopy.fee.message}</span>
-            <span className="fee-amount">+2 coins</span>
+            <span>⚠️ {quest.fee.message}</span>
+            <span className="fee-amount">+{quest.fee.amount} coins</span>
           </div>
           <div className="fee-row fee-row-total">
             <span>Total:</span>
@@ -249,18 +280,18 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
           <span className="quest-icon">📱</span>
           Mystery Message!
         </div>
-        <div className="speaker-pill scam-speaker">{questCopy.scam.speaker}</div>
+        <div className="speaker-pill scam-speaker">{quest.scam.speaker}</div>
         <div className="speech-bubble speech-bubble-scam">
-          💰 {questCopy.scam.message}
+          💰 {quest.scam.message}
         </div>
         
         {!scamChoice ? (
           <div className="choice-stack">
             <button className="choice-btn choice-btn-danger" onClick={() => handleScam("pay")}>
-              💸 {questCopy.scam.choices.pay}
+              💸 {quest.scam.choices.pay}
             </button>
             <button className="choice-btn choice-btn-safe" onClick={() => handleScam("ask")}>
-              🙋 {questCopy.scam.choices.ask}
+              🙋 {quest.scam.choices.ask}
             </button>
           </div>
         ) : (
@@ -271,7 +302,7 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
             </div>
             <div className="rule-card">
               <div className="rule-icon">🛡️</div>
-              <div className="rule-text">{questCopy.scam.rule}</div>
+              <div className="rule-text">{quest.scam.rule}</div>
             </div>
             <button className="confirm-btn confirm-btn-large" onClick={finishQuest}>
               See Results
@@ -286,54 +317,56 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
   if (stage === "RESULT") {
     const avoidedScam = scamChoice !== "pay";
     const xpGained = 10 + Math.max(0, finalCoinsLeft * 2) + (avoidedScam ? 5 : 0);
-    const plannedWell = finalCoinsLeft >= 2 && avoidedScam;
     
     return (
       <div className="quest-card quest-card-result">
         <div className="result-confetti">🎉</div>
         <div className="quest-header quest-header-result">
-          {questCopy.result.questComplete}
+          {quest.result.questComplete}
         </div>
         
         <div className="badge-display">
-          <div className="badge-icon">{questCopy.result.badgeName}</div>
-          <div className="badge-label">{questCopy.result.badgeTitle}</div>
+          <div className="badge-icon">{quest.result.badgeName}</div>
+          <div className="badge-label">{quest.result.badgeTitle}</div>
         </div>
         
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-value">🪙 {finalCoinsLeft}</div>
-            <div className="stat-label">{questCopy.result.stats.coinsLeft}</div>
+            <div className="stat-label">Coins left</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">⭐ +{xpGained}</div>
-            <div className="stat-label">{questCopy.result.stats.xpEarned}</div>
+            <div className="stat-label">XP earned</div>
           </div>
         </div>
         
         <div className="tip-card">
           <div className="tip-icon">💡</div>
-          <div className="tip-text">{questCopy.result.tip}</div>
+          <div className="tip-text">{quest.result.tip}</div>
         </div>
         
         <button className="confirm-btn confirm-btn-large confirm-btn-success" onClick={() => onStageChange("WORLD")}>
-          {questCopy.result.returnButton}
+          {quest.result.returnButton}
         </button>
       </div>
     );
   }
 
+  // Get unique categories for tabs
+  const uniqueCategories = [...new Set(items.map(i => i.category))];
+
   // ========== SHOP STAGE: Main Shopping Interface ==========
   return (
     <div className="quest-card">
       <CoachHint 
-        text={coachMessage || questCopy.coachHints.default} 
+        text={coachMessage || quest.coachHints.default} 
         avatar="👩‍🏫"
       />
       
       <div className="quest-header">
         <span className="quest-icon">🛒</span>
-        Lunch Rush Snack Mix
+        {quest.title}
       </div>
       
       <div className="budget-display">
@@ -344,20 +377,16 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
       </div>
 
       <div className="category-tabs">
-        <button 
-          className={`category-tab ${category === "fuel" ? "active fuel" : ""}`} 
-          onClick={() => { setCategory("fuel"); onPlaySound("click"); }}
-        >
-          🍎 Fuel Snacks
-          <span className="category-hint">Healthy</span>
-        </button>
-        <button 
-          className={`category-tab ${category === "treat" ? "active treat" : ""}`} 
-          onClick={() => { setCategory("treat"); onPlaySound("click"); }}
-        >
-          🍬 Treat Snacks
-          <span className="category-hint">Yummy</span>
-        </button>
+        {uniqueCategories.map((cat) => (
+          <button 
+            key={cat}
+            className={`category-tab ${category === cat ? `active ${cat}` : ""}`} 
+            onClick={() => { setCategory(cat); onPlaySound("click"); }}
+          >
+            {getCategoryIcon(cat)} {getCategoryLabel(cat)}
+            <span className="category-hint">{cat === "need" || cat === "save" ? "Important" : "Fun"}</span>
+          </button>
+        ))}
       </div>
 
       <div className="item-grid">
@@ -382,7 +411,7 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
         </div>
         <div className="backpack-items">
           {backpack.length === 0 && (
-            <span className="backpack-empty">Tap snacks to add them here</span>
+            <span className="backpack-empty">Tap items to add them here</span>
           )}
           {backpack.map((item, index) => (
             <button
@@ -395,38 +424,38 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
           ))}
         </div>
         {selectedBackpack !== null && (
-          <div className="backpack-hint">Tap a slot below to place the snack</div>
+          <div className="backpack-hint">Tap a slot below to place the item</div>
         )}
       </div>
 
       <div className="shelf-slots">
-        <div className="shelf-label">📦 Shelf</div>
+        <div className="shelf-label">📦 Your Choices</div>
         <div className="slot-row">
           <button 
-            className={`slot fuel ${slots.fuel1 ? "filled" : ""} ${selectedBackpack !== null ? "ready" : ""}`} 
-            onClick={() => slots.fuel1 ? removeFromSlot("fuel1") : placeIntoSlot("fuel1")}
+            className={`slot ${quest.slotConfig.slot1.category} ${slots.slot1 ? "filled" : ""} ${selectedBackpack !== null ? "ready" : ""}`} 
+            onClick={() => slots.slot1 ? removeFromSlot("slot1") : placeIntoSlot("slot1")}
           >
-            <span className="slot-label">Fuel 1</span>
-            {slots.fuel1 && (
-              <span className="slot-item">{slots.fuel1.icon} {slots.fuel1.name}</span>
+            <span className="slot-label">{quest.slotConfig.slot1.label}</span>
+            {slots.slot1 && (
+              <span className="slot-item">{slots.slot1.icon} {slots.slot1.name}</span>
             )}
           </button>
           <button 
-            className={`slot fuel ${slots.fuel2 ? "filled" : ""} ${selectedBackpack !== null ? "ready" : ""}`} 
-            onClick={() => slots.fuel2 ? removeFromSlot("fuel2") : placeIntoSlot("fuel2")}
+            className={`slot ${quest.slotConfig.slot2.category} ${slots.slot2 ? "filled" : ""} ${selectedBackpack !== null ? "ready" : ""}`} 
+            onClick={() => slots.slot2 ? removeFromSlot("slot2") : placeIntoSlot("slot2")}
           >
-            <span className="slot-label">Fuel 2</span>
-            {slots.fuel2 && (
-              <span className="slot-item">{slots.fuel2.icon} {slots.fuel2.name}</span>
+            <span className="slot-label">{quest.slotConfig.slot2.label}</span>
+            {slots.slot2 && (
+              <span className="slot-item">{slots.slot2.icon} {slots.slot2.name}</span>
             )}
           </button>
           <button 
-            className={`slot treat ${slots.treat ? "filled" : ""} ${selectedBackpack !== null ? "ready" : ""}`} 
-            onClick={() => slots.treat ? removeFromSlot("treat") : placeIntoSlot("treat")}
+            className={`slot ${quest.slotConfig.slot3.category} ${slots.slot3 ? "filled" : ""} ${selectedBackpack !== null ? "ready" : ""}`} 
+            onClick={() => slots.slot3 ? removeFromSlot("slot3") : placeIntoSlot("slot3")}
           >
-            <span className="slot-label">Treat</span>
-            {slots.treat && (
-              <span className="slot-item">{slots.treat.icon} {slots.treat.name}</span>
+            <span className="slot-label">{quest.slotConfig.slot3.label}</span>
+            {slots.slot3 && (
+              <span className="slot-item">{slots.slot3.icon} {slots.slot3.name}</span>
             )}
           </button>
         </div>
@@ -440,9 +469,9 @@ export const QuestPanelSnackMix: React.FC<QuestPanelSnackMixProps> = ({
       )}
 
       <button 
-        className={`checkout-btn ${slots.fuel1 && slots.fuel2 ? "ready" : "disabled"}`} 
+        className={`checkout-btn ${slots.slot1 && slots.slot2 ? "ready" : "disabled"}`} 
         onClick={startCheckout}
-        disabled={!slots.fuel1 || !slots.fuel2}
+        disabled={!slots.slot1 || !slots.slot2}
       >
         🛒 Checkout
       </button>

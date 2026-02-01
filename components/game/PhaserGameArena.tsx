@@ -2,11 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { User } from "../../types";
 import { PhaserGame } from "./PhaserGame";
 import { DialogueOverlay } from "./DialogueOverlay";
-import { QuestPanelSnackMix } from "./QuestPanelSnackMix";
+import { QuestPanel } from "./QuestPanel";
 import { QuestTracker } from "./QuestTracker";
 import { HudTiny } from "./HudTiny";
-import { clampReputation, loadPlayerState, savePlayerState, PlayerState } from "../../state/playerState";
-import { questCopy } from "../../data/questSnackMix";
+import { loadPlayerState, savePlayerState, PlayerState } from "../../state/playerState";
+import { getQuestByLevel } from "../../data/quests";
 import "./phaserGame.css";
 
 type QuestStage = "WORLD" | "DIALOGUE" | "SHOP" | "TWIST" | "CHECKOUT" | "SCAM" | "RESULT";
@@ -83,13 +83,11 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   const updatePlayer = (result: {
     coinsLeft: number;
     xpGained: number;
-    reputationChange: number;
     avoidedScam: boolean;
     plannedWell: boolean;
   }) => {
     setPlayer((prev) => ({
       coins: Math.max(0, prev.coins + result.coinsLeft),
-      reputation: clampReputation(prev.reputation + result.reputationChange),
       quest1Complete: true,
       xp: prev.xp + result.xpGained,
       streak: prev.streak + 1,
@@ -123,6 +121,7 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
 
   const progressPercent = player.quest1Complete ? 100 : (questStageNumber / 4) * 100;
   const levelTitle = LEVEL_TITLES[levelId] || `Level ${levelId}`;
+  const quest = useMemo(() => getQuestByLevel(levelId), [levelId]);
 
   return (
     <div className="phaser-game-arena min-h-[calc(100vh-5rem)] p-4 md:p-2">
@@ -139,7 +138,6 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
         <div className="game-surface">
           {/* <HudTiny
             coins={player.coins}
-            reputation={player.reputation}
             questComplete={player.quest1Complete}
           /> */}
           <QuestTracker stage={questStageNumber} total={4} />
@@ -152,12 +150,12 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
 
           {toast && <div className="toast">{toast}</div>}
 
-          {stage === "DIALOGUE" && (
+          {stage === "DIALOGUE" && quest && (
             <div className="overlay-backdrop">
               <DialogueOverlay
-                line={questCopy.introLines[dialogueIndex]}
+                line={quest.introLines[dialogueIndex]}
                 step={dialogueIndex}
-                totalSteps={questCopy.introLines.length}
+                totalSteps={quest.introLines.length}
                 onNext={() => {
                   playSound("click");
                   setDialogueIndex((prev) => prev + 1);
@@ -173,7 +171,8 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
 
           {stage !== "WORLD" && stage !== "DIALOGUE" && (
             <div className="overlay-backdrop">
-              <QuestPanelSnackMix
+              <QuestPanel
+                levelId={levelId}
                 stage={stage === "SHOP" ? "SHOP" : stage === "TWIST" ? "TWIST" : stage === "CHECKOUT" ? "CHECKOUT" : stage === "SCAM" ? "SCAM" : "RESULT"}
                 onStageChange={(next) => {
                   if (next === "RESULT") {

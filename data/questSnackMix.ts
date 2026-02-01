@@ -73,7 +73,6 @@ export const questCopy = {
     stats: {
       coinsLeft: "Coins left",
       xpEarned: "XP earned",
-      reputation: "Reputation",
     },
   },
   
