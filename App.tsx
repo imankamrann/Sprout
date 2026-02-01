@@ -13,7 +13,6 @@ const MOCK_USER: User = {
   username: 'Guest',
   email: '',
   coins: 0,
-  streak: 0,
   completedLevels: []
 };
 

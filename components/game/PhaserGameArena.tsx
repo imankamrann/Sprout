@@ -37,7 +37,6 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   const [player, setPlayer] = useState<PlayerState>(() => ({
     ...loadPlayerState(),
     coins: user.coins,
-    streak: user.streak,
   }));
   const [stage, setStage] = useState<QuestStage>("WORLD");
   const [dialogueIndex, setDialogueIndex] = useState(0);
@@ -88,7 +87,6 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
     setPlayer((prev) => ({
       coins: Math.max(0, prev.coins + result.coinsEarned),
       quest1Complete: true,
-      streak: prev.streak + 1,
     }));
 
     // Update parent user state

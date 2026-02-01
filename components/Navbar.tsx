@@ -14,12 +14,6 @@ export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onHome }) => {
       <SproutLogo onClick={onHome} />
 
       <div className="flex items-center gap-4">
-        {/* Streak */}
-        <div className="flex items-center gap-1">
-          <span className="text-xl">🔥</span>
-          <span className="font-bold text-gray-600">{user.streak}</span>
-        </div>
-
         {/* Coins */}
         <div className="flex items-center gap-1">
           <span className="text-xl">🪙</span>

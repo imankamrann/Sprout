@@ -1,7 +1,6 @@
 export type PlayerState = {
   coins: number;
   quest1Complete: boolean;
-  streak: number;
 };
 
 const STORAGE_KEY = "wss_sprout_player_state";
@@ -9,7 +8,6 @@ const STORAGE_KEY = "wss_sprout_player_state";
 export const defaultPlayerState: PlayerState = {
   coins: 0,
   quest1Complete: false,
-  streak: 0,
 };
 
 export const loadPlayerState = (): PlayerState => {
@@ -20,7 +18,6 @@ export const loadPlayerState = (): PlayerState => {
     return {
       coins: typeof parsed.coins === "number" ? parsed.coins : defaultPlayerState.coins,
       quest1Complete: Boolean(parsed.quest1Complete),
-      streak: typeof parsed.streak === "number" ? parsed.streak : defaultPlayerState.streak,
     };
   } catch {
     return defaultPlayerState;
