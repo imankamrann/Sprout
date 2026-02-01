@@ -57,6 +57,10 @@ export class StoreScene extends Phaser.Scene {
     this.load.image("wall", "assets/props/wall.png");
     this.load.image("baseboard", "assets/props/baseboard.png");
     this.load.image("player", "assets/chars/player.png");
+    this.load.image("player_down", "assets/bearFront.png");
+    this.load.image("player_up", "assets/bearBack.png");
+    this.load.image("player_left", "assets/bearLeft.png");
+    this.load.image("player_right", "assets/bearRight.png");
     this.load.image("npc", "assets/chars/npc.png");
   }
 
@@ -125,17 +129,19 @@ export class StoreScene extends Phaser.Scene {
     this.questMarker.setDepth(1000);
 
     this.playerSheet = this.resolveSheet("player");
-    this.playerBody = this.physics.add.sprite(centerX, 360, this.playerSheet.key);
+    this.playerBody = this.physics.add.sprite(centerX, 360, "player_down");
     this.playerBody.setVisible(false);
     this.playerBody.setCollideWorldBounds(true);
     this.playerBody.setSize(18, 18);
 
     this.playerShadow = this.add.image(centerX, 376, "shadow");
-    this.playerSprite = this.add.sprite(centerX, 360, this.playerSheet.key);
+    
+    // Always use the bear character
+    this.playerSprite = this.add.sprite(centerX, 360, "player_down");
+    this.playerSprite.setScale(0.15); // Scale to match original character size
 
     if (this.playerSheet.isSheet) {
       this.createAnimations(this.playerSheet);
-      this.playerSprite.setFrame(this.playerSheet.rowStart.down + 1);
     }
 
     if (this.npcSheet.isSheet) {
@@ -200,6 +206,12 @@ export class StoreScene extends Phaser.Scene {
         this.playerSprite.stop();
         this.playerSprite.setFrame(this.playerSheet.rowStart[this.currentDir] + 1);
       }
+    }
+    
+    // Always update bear direction texture
+    const textureKey = `player_${this.currentDir}`;
+    if (this.playerSprite.texture.key !== textureKey) {
+      this.playerSprite.setTexture(textureKey);
     }
 
     this.npcShadow.setDepth(this.npcSprite.y - 1);
