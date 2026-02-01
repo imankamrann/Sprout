@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from './Button';
 import { SproutLogo } from './SproutLogo';
 import redPanda from '../assets/RedPanda.svg';
+import { authService } from '../services/authService';
 
 
 
@@ -24,15 +25,48 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) onLogin(email.split('@')[0]);
+    setError('');
+    setLoading(true);
+    
+    try {
+      const data = await authService.login(email, password);
+      onLogin(data.user.username);
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSignupSubmit = (e: React.FormEvent) => {
+  const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (nickname) onLogin(nickname);
+    setError('');
+    
+    if (password !== repeatPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const data = await authService.signup(nickname, email, password);
+      onLogin(data.user.username);
+    } catch (err: any) {
+      setError(err.message || 'Signup failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const goHome = () => setView('landing');
@@ -133,6 +167,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
               {isLogin ? 'Welcome back' : 'Sign up'}
             </h2>
 
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-xl text-red-700 text-sm font-bold text-center">
+                {error}
+              </div>
+            )}
+
             <form onSubmit={isLogin ? handleLoginSubmit : handleSignupSubmit} className="flex flex-col gap-5">
               
               {!isLogin && (
@@ -198,9 +238,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
                     fullWidth 
                     type="submit" 
                     variant="gradient"
-                    className="rounded-full py-4 text-lg" 
+                    className="rounded-full py-4 text-lg"
+                    disabled={loading}
                  >
-                    {isLogin ? 'Log in' : 'Get started! →'}
+                    {loading ? 'Please wait...' : (isLogin ? 'Log in' : 'Get started! →')}
                  </Button>
               </div>
 

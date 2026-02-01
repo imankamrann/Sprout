@@ -5,6 +5,7 @@ import { Dashboard } from './components/Dashboard';
 import { GameArena } from './components/GameArena';
 import { PhaserGameArena } from './components/game/PhaserGameArena';
 import { AuthScreen } from './components/AuthScreen';
+import { authService } from './services/authService';
 
 // Levels that use the Phaser-based game arena (store/shopping quests)
 const PHASER_LEVELS = [1, 2, 3, 4];
@@ -22,10 +23,22 @@ const App: React.FC = () => {
   const [activeLevel, setActiveLevel] = useState<number | null>(null);
 
   const handleLogin = (username: string) => {
-    setUser({ ...MOCK_USER, username });
+    // Get user data from authService (stored after login/signup)
+    const storedUser = authService.getStoredUser();
+    if (storedUser) {
+      setUser({
+        username: storedUser.username,
+        email: storedUser.email,
+        coins: storedUser.coins,
+        completedLevels: storedUser.completedLevels
+      });
+    } else {
+      setUser({ ...MOCK_USER, username });
+    }
   };
 
   const handleLogout = () => {
+    authService.logout();
     setUser(null);
     setCurrentView('dashboard');
   };
@@ -40,22 +53,32 @@ const App: React.FC = () => {
     setCurrentView('dashboard');
   };
 
-  const handleUpdateUser = (coinsEarned: number) => {
+  const handleUpdateUser = async (coinsEarned: number) => {
     if (!user) return;
     
+    // Calculate new values
+    const newCoins = user.coins + coinsEarned;
+    const newCompletedLevels = activeLevel && !user.completedLevels.includes(activeLevel) 
+      ? [...user.completedLevels, activeLevel] 
+      : user.completedLevels;
+
+    // Update local state
     setUser(prev => {
       if (!prev) return null;
-      // If we finished a level, mark it as completed
-      const newCompletedLevels = activeLevel && !prev.completedLevels.includes(activeLevel) 
-        ? [...prev.completedLevels, activeLevel] 
-        : prev.completedLevels;
-
       return {
         ...prev,
-        coins: prev.coins + coinsEarned,
+        coins: newCoins,
         completedLevels: newCompletedLevels
       };
     });
+
+    // Sync to database
+    try {
+      await authService.updateUser(newCoins, newCompletedLevels);
+      console.log('✅ Synced to database: coins=' + newCoins + ', levels=' + newCompletedLevels);
+    } catch (error) {
+      console.error('Failed to sync to database:', error);
+    }
   };
 
   if (!user) {
