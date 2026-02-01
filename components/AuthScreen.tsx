@@ -63,12 +63,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
         {/* Hero Section */}
         <main className="flex-1 flex flex-col md:flex-row items-center justify-between max-w-7xl mx-auto w-full px-4 sm:px-8 mt-8 md:mt-16 mb-20">
           <div className="md:w-1/2 space-y-8 z-10 text-center md:text-left">
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 leading-[1.1]">
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-[1.1]">
               Investing in the <br />
-              Humans of <span className="italic font-serif text-transparent bg-clip-text bg-gradient-to-r from-[#1CB0F6] to-[#A570FF] pr-2">Tomorrow</span>
+              <span className="whitespace-nowrap">Humans of <span className="italic font-serif text-transparent bg-clip-text bg-gradient-to-r from-[#1CB0F6] to-[#A570FF] pr-2">Tomorrow</span></span>
             </h1>
 
-            <div className="space-y-4 max-w-md mx-auto md:mx-0">
+            <div className="space-y-6 max-w-md mx-auto md:mx-0 pt-12">
               {[
                 "Learn financial basics through play",
                 "Safe, simulated trading environment",
