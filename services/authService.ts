@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3001/api';
+// Use relative URLs in production (Vercel), localhost in development
+const API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:3001/api';
 
 export const authService = {
   async signup(username: string, email: string, password: string) {
