@@ -20,15 +20,15 @@ export const PhaserGame: React.FC<PhaserGameProps> = ({ onNpcInteract }) => {
     const scene = new StoreScene(() => onNpcInteractRef.current());
     const game = new Phaser.Game({
       type: Phaser.AUTO,
-      width: 390,
-      height: 520,
+      width: 600,
+      height: 680,
       parent: containerRef.current,
       backgroundColor: "#EAF6FF",
       scale: {
-        mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 390,
-        height: 520,
+        width: 600,
+        height: 680,
       },
       physics: {
         default: "arcade",

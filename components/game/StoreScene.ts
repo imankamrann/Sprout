@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
-const WORLD_WIDTH = 390;
-const WORLD_HEIGHT = 520;
+const WORLD_WIDTH = 600;
+const WORLD_HEIGHT = 680;
 
 const DIRS = ["down", "left", "right", "up"] as const;
 type Direction = (typeof DIRS)[number];

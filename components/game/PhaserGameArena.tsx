@@ -125,7 +125,7 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   const levelTitle = LEVEL_TITLES[levelId] || `Level ${levelId}`;
 
   return (
-    <div className="phaser-game-arena min-h-[calc(100vh-5rem)] p-4 md:p-8">
+    <div className="phaser-game-arena min-h-[calc(100vh-5rem)] p-4 md:p-2">
       {/* Header: Back button + Title */}
       <div className="content-header max-w-4xl mx-auto">
         <button className="back-button" onClick={onExit}>
@@ -134,22 +134,14 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
         <div className="content-title">{levelTitle}</div>
       </div>
 
-      {/* Progress bar */}
-      <div className="progress-card max-w-4xl mx-auto">
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
-        </div>
-        <div className="progress-label">Quest 1 of 1</div>
-      </div>
-
       {/* Game card */}
-      <div className="game-card max-w-4xl mx-auto">
+      <div className="game-card max-w-6xl mx-auto">
         <div className="game-surface">
-          <HudTiny
+          {/* <HudTiny
             coins={player.coins}
             reputation={player.reputation}
             questComplete={player.quest1Complete}
-          />
+          /> */}
           <QuestTracker stage={questStageNumber} total={4} />
           <PhaserGame
             onNpcInteract={() => {

@@ -1,29 +1,49 @@
 /* Phaser Game Arena Styles - Scoped to .phaser-game-arena */
+/* Color Palette: Duolingo x Wealthsimple aesthetic */
 
 .phaser-game-arena {
-  --green: #58CC02;
-  --blue: #1CB0F6;
-  --tile-a: #EAF6FF;
-  --tile-b: #FFFFFF;
-  --outline: rgba(0, 0, 0, 0.1);
-  --shadow: 0 6px 0 rgba(0, 0, 0, 0.08);
+  /* Primary Colors */
+  --green: #78C93F;
+  --green-dark: #5BA830;
+  --blue: #4DA6FF;
+  --purple: #9B8DC9;
+  --purple-dark: #7B6DB0;
+  
+  /* Accent Colors */
+  --yellow: #E8D57E;
+  --pink: #F0B8D8;
+  --gold: #D4A853;
+  
+  /* Neutrals */
+  --charcoal: #333333;
+  --gray-dark: #666666;
+  --gray: #999999;
+  --gray-light: #E5E5E5;
+  --bg: #F5F5F5;
+  --white: #FFFFFF;
+  
+  --outline: rgba(0, 0, 0, 0.08);
+  --shadow: 0 4px 0 rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 2px 0 rgba(0, 0, 0, 0.04);
 }
 
 .phaser-game-arena .game-card {
-  background: #F0F0F0;
-  border-radius: 16px;
-  border: 1px solid #E0E0E0;
-  padding: 16px;
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--gray-light);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .phaser-game-arena .game-surface {
   position: relative;
   width: 100%;
-  height: 520px;
-  background: #EAF6FF;
-  border-radius: 12px;
+  height: 680px;
+  min-height: 600px;
+  background: var(--bg);
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #D0D0D0;
+  border: 1px solid var(--gray-light);
 }
 
 .phaser-game-arena .phaser-container {
@@ -40,86 +60,92 @@
 .phaser-game-arena .overlay-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(51, 51, 51, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px;
+  padding: 24px;
   z-index: 10;
+  overflow-y: auto;
 }
 
 .phaser-game-arena .dialogue-card {
   width: 100%;
-  max-width: 520px;
-  background: #FFFDE7;
-  border-radius: 24px;
-  border: 3px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow);
-  padding: 20px;
+  max-width: 480px;
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--gray-light);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 24px;
   position: relative;
 }
 
 .phaser-game-arena .circle-close {
   position: absolute;
-  top: -16px;
-  left: -16px;
-  width: 38px;
-  height: 38px;
+  top: -12px;
+  left: -12px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: white;
-  border: 2px solid rgba(0, 0, 0, 0.15);
-  color: #666;
-  box-shadow: var(--shadow);
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  color: var(--gray);
+  box-shadow: var(--shadow-sm);
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.phaser-game-arena .circle-close:hover {
+  background: var(--gray-light);
+  color: var(--charcoal);
 }
 
 .phaser-game-arena .name-pill {
-  background: var(--blue);
+  background: var(--green);
   color: white;
-  font-weight: bold;
+  font-weight: 600;
   border-radius: 999px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   display: inline-block;
   margin-bottom: 12px;
+  font-size: 13px;
 }
 
 .phaser-game-arena .speech-bubble {
-  background: white;
-  border-radius: 18px;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  padding: 12px;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
+  background: var(--bg);
+  border-radius: 16px;
+  border: 1px solid var(--gray-light);
+  padding: 14px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-start;
 }
 
 .phaser-game-arena .dotted-text {
-  background-image: linear-gradient(to right, transparent 50%, rgba(0,0,0,0.2) 50%);
-  background-size: 6px 2px;
-  background-repeat: repeat-x;
-  background-position: 0 100%;
-  padding-bottom: 4px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--charcoal);
 }
 
 .phaser-game-arena .choice-stack {
   margin-top: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .phaser-game-arena .choice-btn {
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 2px solid rgba(0,0,0,0.12);
-  background: white;
-  font-weight: bold;
-  font-size: 15px;
-  box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--gray-light);
+  background: var(--white);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--charcoal);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: transform 0.05s, border-color 0.05s;
+  transition: all 0.15s;
 }
 
 .phaser-game-arena .choice-btn:active {
@@ -128,27 +154,31 @@
 }
 
 .phaser-game-arena .dialogue-progress {
-  margin-top: 10px;
+  margin-top: 14px;
   font-size: 12px;
-  font-weight: bold;
-  text-align: right;
+  font-weight: 600;
+  text-align: center;
+  color: var(--gray);
 }
 
 .phaser-game-arena .quest-card {
   width: 100%;
-  max-width: 560px;
-  background: white;
-  border-radius: 22px;
-  border: 3px solid rgba(0, 0, 0, 0.12);
-  box-shadow: var(--shadow);
+  max-width: 440px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--gray-light);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   padding: 18px;
   position: relative;
 }
 
 .phaser-game-arena .quest-header {
-  font-weight: bold;
-  font-size: 20px;
+  font-weight: 700;
+  font-size: 17px;
   margin-bottom: 10px;
+  color: var(--charcoal);
 }
 
 .phaser-game-arena .budget-row {
@@ -172,30 +202,40 @@
 
 .phaser-game-arena .item-card {
   padding: 12px;
-  border-radius: 16px;
-  border: 2px solid rgba(0,0,0,0.12);
-  background: #F5FBFF;
-  font-weight: bold;
+  border-radius: 14px;
+  border: 1px solid var(--gray-light);
+  background: var(--white);
+  font-weight: 600;
   text-align: center;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.phaser-game-arena .item-card:hover {
+  border-color: var(--purple);
 }
 
 .phaser-game-arena .item-card.selected {
-  background: #D7F5C7;
-  transform: translateY(2px);
+  background: #E8F5E9;
+  border-color: var(--green);
 }
 
 .phaser-game-arena .confirm-btn {
   width: 100%;
   padding: 14px;
-  border-radius: 18px;
-  background: var(--green);
+  border-radius: 14px;
+  background: var(--purple);
   color: white;
-  font-weight: bold;
+  font-weight: 600;
   border: none;
-  box-shadow: var(--shadow);
+  box-shadow: 0 3px 0 var(--purple-dark);
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.phaser-game-arena .confirm-btn:hover {
+  background: var(--purple-dark);
 }
 
 .phaser-game-arena .hud-tiny {
@@ -329,34 +369,35 @@
 .phaser-game-arena .message {
   font-weight: bold;
   color: #C62828;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .phaser-game-arena .coach-hint {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .phaser-game-arena .coach-avatar {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: #FFD54F;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-size: 14px;
   border: 2px solid rgba(0,0,0,0.1);
+  flex-shrink: 0;
 }
 
 .phaser-game-arena .coach-bubble {
   background: #FFFDE7;
-  border-radius: 12px;
-  padding: 8px 10px;
+  border-radius: 10px;
+  padding: 6px 10px;
   border: 2px solid rgba(0,0,0,0.1);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .phaser-game-arena .rule-card {
@@ -806,76 +847,80 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #FFF8E1, #FFECB3);
-  border-radius: 16px;
-  padding: 12px 18px;
-  margin-bottom: 14px;
-  border: 2px solid #FFD54F;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--gray-light);
 }
 
 .phaser-game-arena .budget-coin {
-  font-size: 28px;
+  font-size: 24px;
 }
 
 .phaser-game-arena .budget-amount {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gold);
 }
 
 .phaser-game-arena .budget-label {
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: var(--gray);
 }
 
 .phaser-game-arena .budget-warning {
-  background: #FFCDD2;
+  background: var(--pink);
   color: #C62828;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 8px;
-  margin-left: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-left: 6px;
 }
 
 /* Category Tabs */
 .phaser-game-arena .category-tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .phaser-game-arena .category-tab {
   flex: 1;
-  border-radius: 14px;
-  border: 2px solid rgba(0,0,0,0.1);
-  background: #FFFFFF;
-  font-weight: bold;
-  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--gray-light);
+  background: var(--white);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 8px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   transition: all 0.15s;
 }
 
 .phaser-game-arena .category-tab:hover {
-  border-color: rgba(0,0,0,0.2);
+  border-color: var(--purple);
 }
 
 .phaser-game-arena .category-tab.active.fuel {
-  background: linear-gradient(135deg, #C8E6C9, #A5D6A7);
-  border-color: #81C784;
+  background: #E8F5E9;
+  border-color: var(--green);
+  color: var(--green-dark);
 }
 
 .phaser-game-arena .category-tab.active.treat {
-  background: linear-gradient(135deg, #FFE0B2, #FFCC80);
-  border-color: #FFB74D;
+  background: #FFF8E1;
+  border-color: var(--yellow);
+  color: #A68A2B;
 }
 
 .phaser-game-arena .category-hint {
-  font-size: 10px;
-  color: #666;
+  font-size: 9px;
+  color: var(--gray);
   font-weight: normal;
 }
 
@@ -883,163 +928,164 @@
 .phaser-game-arena .item-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 12px 0;
+  gap: 8px;
+  margin: 10px 0;
 }
 
 .phaser-game-arena .item-card {
-  padding: 14px 10px;
-  border-radius: 16px;
-  border: 2px solid rgba(0,0,0,0.1);
-  background: white;
+  padding: 10px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--gray-light);
+  background: var(--white);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
   transition: all 0.1s;
-  box-shadow: 0 3px 0 rgba(0,0,0,0.06);
 }
 
 .phaser-game-arena .item-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 rgba(0,0,0,0.08);
+  border-color: var(--purple);
 }
 
 .phaser-game-arena .item-card:active {
   transform: translateY(1px);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.08);
 }
 
 .phaser-game-arena .item-card.fuel {
-  background: linear-gradient(180deg, #E8F5E9, #F5F5F5);
-  border-color: #A5D6A7;
+  background: #F1F8F1;
+  border-color: var(--green);
 }
 
 .phaser-game-arena .item-card.treat {
-  background: linear-gradient(180deg, #FFF3E0, #F5F5F5);
-  border-color: #FFCC80;
+  background: #FFF9F0;
+  border-color: var(--yellow);
 }
 
 .phaser-game-arena .item-icon {
-  font-size: 28px;
+  font-size: 22px;
 }
 
 .phaser-game-arena .item-name {
-  font-weight: bold;
-  font-size: 12px;
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--charcoal);
 }
 
 .phaser-game-arena .item-cost {
-  font-size: 11px;
-  color: #666;
+  font-size: 10px;
+  color: var(--gray);
   font-weight: 600;
 }
 
 /* Backpack Section */
 .phaser-game-arena .backpack-section {
-  background: #FAFAFA;
-  border-radius: 14px;
-  padding: 12px;
-  border: 2px solid rgba(0,0,0,0.08);
-  margin-bottom: 12px;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 10px;
+  border: 1px solid var(--gray-light);
+  margin-bottom: 10px;
 }
 
 .phaser-game-arena .backpack-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .phaser-game-arena .backpack-icon {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .phaser-game-arena .backpack-title {
-  font-weight: bold;
-  font-size: 13px;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--charcoal);
 }
 
 .phaser-game-arena .backpack-count {
   background: var(--blue);
   color: white;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 2px 8px;
-  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 8px;
 }
 
 .phaser-game-arena .backpack-items {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  min-height: 32px;
+  gap: 6px;
+  min-height: 28px;
 }
 
 .phaser-game-arena .backpack-empty {
-  font-size: 12px;
-  color: #999;
+  font-size: 11px;
+  color: var(--gray);
   font-style: italic;
 }
 
 .phaser-game-arena .backpack-chip {
-  padding: 6px 10px;
-  border-radius: 10px;
-  border: 2px solid rgba(0,0,0,0.1);
-  background: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-light);
+  background: var(--white);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   transition: all 0.1s;
 }
 
 .phaser-game-arena .backpack-chip.fuel {
-  background: #E8F5E9;
-  border-color: #A5D6A7;
+  background: #F1F8F1;
+  border-color: var(--green);
 }
 
 .phaser-game-arena .backpack-chip.treat {
-  background: #FFF3E0;
-  border-color: #FFCC80;
+  background: #FFF9F0;
+  border-color: var(--yellow);
 }
 
 .phaser-game-arena .backpack-chip.selected {
   transform: scale(1.05);
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(28, 176, 246, 0.2);
+  border-color: var(--purple);
+  box-shadow: 0 0 0 2px rgba(155, 141, 201, 0.2);
 }
 
 .phaser-game-arena .backpack-hint {
-  margin-top: 8px;
-  font-size: 11px;
+  margin-top: 6px;
+  font-size: 10px;
   color: var(--blue);
   font-weight: 600;
 }
 
 /* Shelf Slots */
 .phaser-game-arena .shelf-slots {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .phaser-game-arena .shelf-label {
-  font-weight: bold;
-  font-size: 13px;
-  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: var(--charcoal);
 }
 
 .phaser-game-arena .slot-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .phaser-game-arena .slot {
   flex: 1;
-  min-height: 60px;
-  border-radius: 14px;
-  border: 2px dashed rgba(0,0,0,0.15);
-  background: #FAFAFA;
-  padding: 10px;
+  min-height: 50px;
+  border-radius: 12px;
+  border: 2px dashed var(--gray-light);
+  background: var(--white);
+  padding: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1050,40 +1096,41 @@
 }
 
 .phaser-game-arena .slot.ready {
-  border-color: var(--blue);
-  background: #E3F2FD;
+  border-color: var(--purple);
+  background: #F5F3FA;
 }
 
 .phaser-game-arena .slot.filled {
   border-style: solid;
-  background: white;
+  background: var(--white);
 }
 
 .phaser-game-arena .slot.fuel {
-  border-color: #A5D6A7;
+  border-color: var(--green);
 }
 
 .phaser-game-arena .slot.fuel.filled {
-  background: #E8F5E9;
+  background: #F1F8F1;
 }
 
 .phaser-game-arena .slot.treat {
-  border-color: #FFCC80;
+  border-color: var(--yellow);
 }
 
 .phaser-game-arena .slot.treat.filled {
-  background: #FFF3E0;
+  background: #FFF9F0;
 }
 
 .phaser-game-arena .slot-label {
   font-size: 10px;
-  color: #999;
+  color: var(--gray);
   font-weight: 600;
 }
 
 .phaser-game-arena .slot-item {
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 600;
+  color: var(--charcoal);
 }
 
 /* Message Toast */
@@ -1091,13 +1138,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #FFF9C4;
-  border: 2px solid #FDD835;
+  background: #FFF9E6;
+  border: 1px solid var(--yellow);
   border-radius: 12px;
   padding: 10px 14px;
   margin-bottom: 12px;
   font-weight: 600;
   font-size: 13px;
+  color: var(--charcoal);
 }
 
 .phaser-game-arena .message-icon {
@@ -1107,38 +1155,40 @@
 /* Checkout Button */
 .phaser-game-arena .checkout-btn {
   width: 100%;
-  padding: 16px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #58CC02, #4CAF50);
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--green);
   color: white;
-  font-weight: bold;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 15px;
   border: none;
-  box-shadow: 0 4px 0 #43A047;
   cursor: pointer;
-  transition: all 0.1s;
+  transition: all 0.15s;
+}
+
+.phaser-game-arena .checkout-btn:hover {
+  background: var(--green-dark);
 }
 
 .phaser-game-arena .checkout-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #43A047;
+  transform: translateY(1px);
 }
 
 .phaser-game-arena .checkout-btn.disabled {
-  background: #E0E0E0;
-  box-shadow: 0 4px 0 #BDBDBD;
+  background: var(--gray-light);
+  color: var(--gray);
   cursor: not-allowed;
 }
 
 /* Coach Hint Variants */
 .phaser-game-arena .coach-hint-warning .coach-bubble {
-  background: #FFF3E0;
-  border-color: #FFB74D;
+  background: #FFF9E6;
+  border-color: var(--yellow);
 }
 
 .phaser-game-arena .coach-hint-success .coach-bubble {
-  background: #E8F5E9;
-  border-color: #81C784;
+  background: #F1F8F1;
+  border-color: var(--green);
 }
 
 /* Enhanced Confetti */
@@ -1152,25 +1202,22 @@
   animation: confetti-fall 1.2s ease-out forwards;
 }
 
-.phaser-game-arena .confetti-piece:nth-child(1) { left: 10%; animation-delay: 0s; }
-.phaser-game-arena .confetti-piece:nth-child(2) { left: 20%; animation-delay: 0.05s; }
-.phaser-game-arena .confetti-piece:nth-child(3) { left: 30%; animation-delay: 0.1s; }
-.phaser-game-arena .confetti-piece:nth-child(4) { left: 40%; animation-delay: 0.15s; }
-.phaser-game-arena .confetti-piece:nth-child(5) { left: 50%; animation-delay: 0.2s; }
-.phaser-game-arena .confetti-piece:nth-child(6) { left: 60%; animation-delay: 0.08s; }
-.phaser-game-arena .confetti-piece:nth-child(7) { left: 70%; animation-delay: 0.12s; }
-.phaser-game-arena .confetti-piece:nth-child(8) { left: 80%; animation-delay: 0.18s; }
-.phaser-game-arena .confetti-piece:nth-child(9) { left: 90%; animation-delay: 0.03s; }
-.phaser-game-arena .confetti-piece:nth-child(10) { left: 15%; animation-delay: 0.07s; }
-.phaser-game-arena .confetti-piece:nth-child(11) { left: 25%; animation-delay: 0.13s; }
-.phaser-game-arena .confetti-piece:nth-child(12) { left: 35%; animation-delay: 0.09s; }
-.phaser-game-arena .confetti-piece:nth-child(13) { left: 55%; animation-delay: 0.16s; }
-.phaser-game-arena .confetti-piece:nth-child(14) { left: 65%; animation-delay: 0.04s; }
-.phaser-game-arena .confetti-piece:nth-child(15) { left: 75%; animation-delay: 0.11s; }
-.phaser-game-arena .confetti-piece:nth-child(16) { left: 85%; animation-delay: 0.06s; }
-
-.phaser-game-arena .confetti-piece:nth-child(4n) { background: #FF7043; }
-.phaser-game-arena .confetti-piece:nth-child(5n) { background: #AB47BC; }
+.phaser-game-arena .confetti-piece:nth-child(1) { left: 10%; animation-delay: 0s; background: var(--green); }
+.phaser-game-arena .confetti-piece:nth-child(2) { left: 20%; animation-delay: 0.05s; background: var(--blue); }
+.phaser-game-arena .confetti-piece:nth-child(3) { left: 30%; animation-delay: 0.1s; background: var(--purple); }
+.phaser-game-arena .confetti-piece:nth-child(4) { left: 40%; animation-delay: 0.15s; background: var(--yellow); }
+.phaser-game-arena .confetti-piece:nth-child(5) { left: 50%; animation-delay: 0.2s; background: var(--pink); }
+.phaser-game-arena .confetti-piece:nth-child(6) { left: 60%; animation-delay: 0.08s; background: var(--green); }
+.phaser-game-arena .confetti-piece:nth-child(7) { left: 70%; animation-delay: 0.12s; background: var(--blue); }
+.phaser-game-arena .confetti-piece:nth-child(8) { left: 80%; animation-delay: 0.18s; background: var(--purple); }
+.phaser-game-arena .confetti-piece:nth-child(9) { left: 90%; animation-delay: 0.03s; background: var(--yellow); }
+.phaser-game-arena .confetti-piece:nth-child(10) { left: 15%; animation-delay: 0.07s; background: var(--pink); }
+.phaser-game-arena .confetti-piece:nth-child(11) { left: 25%; animation-delay: 0.13s; background: var(--green); }
+.phaser-game-arena .confetti-piece:nth-child(12) { left: 35%; animation-delay: 0.09s; background: var(--blue); }
+.phaser-game-arena .confetti-piece:nth-child(13) { left: 55%; animation-delay: 0.16s; background: var(--purple); }
+.phaser-game-arena .confetti-piece:nth-child(14) { left: 65%; animation-delay: 0.04s; background: var(--yellow); }
+.phaser-game-arena .confetti-piece:nth-child(15) { left: 75%; animation-delay: 0.11s; background: var(--pink); }
+.phaser-game-arena .confetti-piece:nth-child(16) { left: 85%; animation-delay: 0.06s; background: var(--green); }
 
 @keyframes confetti-fall {
   0% { 
