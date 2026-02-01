@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
 import { SproutLogo } from './SproutLogo';
+import redPanda from '../assets/RedPanda.svg';
 
 
 
@@ -88,8 +89,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
           <div className="md:w-1/2 flex justify-center md:justify-end relative mt-12 md:mt-0">
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-white rounded-full opacity-50 blur-3xl -z-10"></div>
             <div className="relative w-80 h-80 md:w-[500px] md:h-[500px]">
-              <div className="w-full h-full flex items-center justify-center text-[15rem] md:text-[20rem] select-none">
-                🐼
+              <div className="w-full h-full flex items-center justify-center select-none">
+                <img src={redPanda} alt="Red Panda mascot" className="w-full h-full object-contain" />
               </div>
             </div>
           </div>
@@ -120,8 +121,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
           {/* Left Column - Mascot */}
           <div className="hidden md:flex justify-center relative">
              <div className="relative w-[400px] h-[400px]">
-                <div className="w-full h-full flex items-center justify-center text-[15rem] md:text-[20rem] filter drop-shadow-2xl select-none">
-                  🐼
+                <div className="w-full h-full flex items-center justify-center filter drop-shadow-2xl select-none">
+                  <img src={redPanda} alt="Red Panda mascot" className="w-full h-full object-contain" />
                 </div>
              </div>
           </div>

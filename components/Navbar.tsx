@@ -10,7 +10,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onHome }) => {
   return (
-    <nav className="fixed top-0 left-0 right-0 h-16 bg-white border-b-2 border-gray-200 flex items-center justify-between px-4 z-50">
+    <nav className="fixed top-0 left-0 right-0 h-16 bg-white border-b-2 border-gray-200 flex items-center justify-between px-24 z-50">
       <SproutLogo onClick={onHome} />
 
       <div className="flex items-center gap-4">
