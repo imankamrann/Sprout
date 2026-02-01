@@ -53,6 +53,16 @@ const App: React.FC = () => {
     setCurrentView('dashboard');
   };
 
+  const handleNextLevel = () => {
+    if (activeLevel && activeLevel < 4) {
+      setActiveLevel(activeLevel + 1);
+    } else {
+      // Last level completed, go to dashboard
+      setActiveLevel(null);
+      setCurrentView('dashboard');
+    }
+  };
+
   const handleUpdateUser = async (coinsEarned: number) => {
     if (!user) return;
     
@@ -100,7 +110,8 @@ const App: React.FC = () => {
               user={user}
               levelId={activeLevel}
               onUpdateUser={handleUpdateUser} 
-              onExit={handleExitLevel} 
+              onExit={handleExitLevel}
+              onNextLevel={handleNextLevel}
             />
           ) : (
             <GameArena 

@@ -26,6 +26,7 @@ interface PhaserGameArenaProps {
   levelId: number;
   onUpdateUser: (coinsEarned: number) => void;
   onExit: () => void;
+  onNextLevel: () => void;
 }
 
 export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
@@ -33,6 +34,7 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   levelId,
   onUpdateUser,
   onExit,
+  onNextLevel,
 }) => {
   const [player, setPlayer] = useState<PlayerState>(() => ({
     ...loadPlayerState(),
@@ -228,6 +230,8 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
                 playSound("coin");
               }}
               onPlaySound={playSound}
+              onNextLevel={onNextLevel}
+              isCompleted={user.completedLevels.includes(levelId)}
             />
           </div>
         )}

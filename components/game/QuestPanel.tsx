@@ -13,6 +13,8 @@ interface QuestPanelProps {
     plannedWell: boolean;
   }) => void;
   onPlaySound: (type: "click" | "coin" | "success") => void;
+  onNextLevel: () => void;
+  isCompleted: boolean;
 }
 
 type SlotId = "slot1" | "slot2" | "slot3";
@@ -29,8 +31,11 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
   onStageChange,
   onResult,
   onPlaySound,
+  onNextLevel,
+  isCompleted,
 }) => {
   const quest = useMemo(() => getQuestByLevel(levelId), [levelId]);
+  const isLastLevel = levelId >= 4;
   
   // Fallback if quest not found
   if (!quest) {
@@ -324,6 +329,49 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
     const avoidedScam = scamChoice !== "pay";
     const coinsEarned = Math.max(0, finalCoinsLeft) + (avoidedScam ? 5 : 0);
     
+    // Congrats screen for completing all levels
+    if (isLastLevel) {
+      return (
+        <div className="quest-card quest-card-result">
+          <div className="result-confetti">🎊</div>
+          <div className="quest-header quest-header-result" style={{ fontSize: '28px' }}>
+            🏆 Congratulations! 🏆
+          </div>
+          
+          <div className="congrats-message" style={{ textAlign: 'center', padding: '20px 0' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌟</div>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>
+              You've completed all levels!
+            </h3>
+            <p style={{ fontSize: '16px', color: '#666' }}>
+              You're now a money management pro! Keep practicing to earn more coins.
+            </p>
+          </div>
+          
+          <div className="result-rewards">
+            <div className="badge-display">
+              <div className="badge-icon">🏆</div>
+              <div className="badge-label">Master Saver</div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-value"><img src={coinIcon} alt="Coins" className="inline-coin" /> +{coinsEarned}</div>
+              <div className="stat-label">Coins earned</div>
+            </div>
+          </div>
+          
+          <div className="tip-card">
+            <div className="tip-icon">🎉</div>
+            <div className="tip-text">Amazing work! You've learned saving, spending wisely, and avoiding scams!</div>
+          </div>
+          
+          <button className="confirm-btn confirm-btn-large confirm-btn-success" onClick={onNextLevel}>
+            Back to Dashboard 🏠
+          </button>
+        </div>
+      );
+    }
+    
     return (
       <div className="quest-card quest-card-result">
         <div className="result-confetti">🎉</div>
@@ -348,9 +396,18 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
           <div className="tip-text">{quest.result.tip}</div>
         </div>
         
-        <button className="confirm-btn confirm-btn-large confirm-btn-success" onClick={() => onStageChange("WORLD")}>
-          {quest.result.returnButton}
-        </button>
+        <div className="result-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button className="confirm-btn confirm-btn-large confirm-btn-success" onClick={onNextLevel}>
+            Next Level →
+          </button>
+          <button 
+            className="confirm-btn confirm-btn-large" 
+            onClick={() => onStageChange("WORLD")}
+            style={{ background: '#e5e5e5', color: '#666' }}
+          >
+            Back to Dashboard
+          </button>
+        </div>
       </div>
     );
   }
@@ -361,6 +418,26 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
   // ========== SHOP STAGE: Main Shopping Interface ==========
   return (
     <div className="quest-card">
+      {isCompleted && (
+        <div className="completed-banner" style={{
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          color: 'white',
+          padding: '12px 16px',
+          borderRadius: '12px',
+          marginBottom: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)'
+        }}>
+          <span style={{ fontSize: '24px' }}>✅</span>
+          <div>
+            <div style={{ fontWeight: 'bold', fontSize: '14px' }}>Level Completed!</div>
+            <div style={{ fontSize: '12px', opacity: 0.9 }}>You can replay to earn more coins</div>
+          </div>
+        </div>
+      )}
+      
       <CoachHint 
         text={coachMessage || quest.coachHints.default} 
         avatar="👩‍🏫"
