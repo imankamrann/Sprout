@@ -47,6 +47,14 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   const [showTutorial, setShowTutorial] = useState(true);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
+  // Reset stage when level changes (e.g., when clicking "Next Level")
+  useEffect(() => {
+    setStage("WORLD");
+    setDialogueIndex(0);
+    setConfettiOn(false);
+    setShowTutorial(true);
+  }, [levelId]);
+
   useEffect(() => {
     savePlayerState(player);
   }, [player]);
