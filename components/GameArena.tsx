@@ -6,7 +6,7 @@ import { StoryOverlay } from './StoryOverlay';
 interface GameArenaProps {
   user: User;
   levelId: number;
-  onUpdateUser: (xpEarned: number, coinsEarned: number) => void;
+  onUpdateUser: (coinsEarned: number) => void;
   onExit: () => void;
 }
 
@@ -110,14 +110,14 @@ export const GameArena: React.FC<GameArenaProps> = ({ user, levelId, onUpdateUse
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  const handleNpcComplete = (success: boolean, reward: { xp: number, coins: number }) => {
+  const handleNpcComplete = (success: boolean, reward: { coins: number }) => {
     if (activeNpc) {
       setCompletedNpcs(prev => new Set(prev).add(activeNpc.id));
       setQuestStage(prev => prev + 1);
       
       if (success) {
-        onUpdateUser(reward.xp, reward.coins);
-        setFeedbackMessage(`+${reward.xp} XP, +${reward.coins} coins!`);
+        onUpdateUser(reward.coins);
+        setFeedbackMessage(`+${reward.coins} coins!`);
         setFeedbackType('success');
       } else {
         setFeedbackMessage('Try again next time!');
@@ -262,13 +262,6 @@ export const GameArena: React.FC<GameArenaProps> = ({ user, levelId, onUpdateUse
             <div className="flex items-center gap-1 bg-white px-3 py-1 rounded-lg shadow-sm">
               <span className="text-gray-700 font-semibold">Coins:</span>
               <span className="font-bold text-yellow-600">{user.coins}</span>
-            </div>
-            {/* Rep bar */}
-            <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg shadow-sm">
-              <span className="text-gray-500 text-xs font-medium">Rep</span>
-              <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-sprout-green rounded-full" style={{ width: `${Math.min(100, (user.xp % 100))}%` }} />
-              </div>
             </div>
           </div>
           <div className="text-gray-600 font-medium">

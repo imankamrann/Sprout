@@ -24,7 +24,7 @@ const LEVEL_TITLES: Record<number, string> = {
 interface PhaserGameArenaProps {
   user: User;
   levelId: number;
-  onUpdateUser: (xpEarned: number, coinsEarned: number) => void;
+  onUpdateUser: (coinsEarned: number) => void;
   onExit: () => void;
 }
 
@@ -37,7 +37,6 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   const [player, setPlayer] = useState<PlayerState>(() => ({
     ...loadPlayerState(),
     coins: user.coins,
-    xp: user.xp,
     streak: user.streak,
   }));
   const [stage, setStage] = useState<QuestStage>("WORLD");
@@ -81,20 +80,18 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   };
 
   const updatePlayer = (result: {
-    coinsLeft: number;
-    xpGained: number;
+    coinsEarned: number;
     avoidedScam: boolean;
     plannedWell: boolean;
   }) => {
     setPlayer((prev) => ({
-      coins: Math.max(0, prev.coins + result.coinsLeft),
+      coins: Math.max(0, prev.coins + result.coinsEarned),
       quest1Complete: true,
-      xp: prev.xp + result.xpGained,
       streak: prev.streak + 1,
     }));
 
     // Update parent user state
-    onUpdateUser(result.xpGained, result.coinsLeft);
+    onUpdateUser(result.coinsEarned);
 
     setToast(result.plannedWell ? "You planned well!" : "Next time, save a little more.");
     setTimeout(() => setToast(null), 2200);
@@ -134,13 +131,13 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
       </div>
 
       {/* Game card */}
-      <div className="game-card max-w-6xl mx-auto">
+      <div className="game-card max-w-xl mx-auto">
         <div className="game-surface">
           {/* <HudTiny
             coins={player.coins}
             questComplete={player.quest1Complete}
           /> */}
-          <QuestTracker stage={questStageNumber} total={4} />
+          {/* <QuestTracker stage={questStageNumber} total={4} /> */}
           <PhaserGame
             onNpcInteract={() => {
               setDialogueIndex(0);

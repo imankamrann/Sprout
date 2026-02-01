@@ -7,8 +7,7 @@ interface QuestPanelProps {
   stage: "SHOP" | "TWIST" | "CHECKOUT" | "SCAM" | "RESULT";
   onStageChange: (stage: QuestPanelProps["stage"] | "WORLD") => void;
   onResult: (result: {
-    coinsLeft: number;
-    xpGained: number;
+    coinsEarned: number;
     avoidedScam: boolean;
     plannedWell: boolean;
   }) => void;
@@ -190,13 +189,12 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
 
   const finishQuest = () => {
     const avoidedScam = scamChoice !== "pay";
-    const xpGained = 10 + Math.max(0, finalCoinsLeft * 2) + (avoidedScam ? 5 : 0);
+    const coinsEarned = Math.max(0, finalCoinsLeft) + (avoidedScam ? 5 : 0);
     const plannedWell = finalCoinsLeft >= 2 && avoidedScam;
 
     onPlaySound("success");
     onResult({
-      coinsLeft: finalCoinsLeft,
-      xpGained,
+      coinsEarned,
       avoidedScam,
       plannedWell,
     });
@@ -316,7 +314,7 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
   // ========== RESULT STAGE: Quest Complete ==========
   if (stage === "RESULT") {
     const avoidedScam = scamChoice !== "pay";
-    const xpGained = 10 + Math.max(0, finalCoinsLeft * 2) + (avoidedScam ? 5 : 0);
+    const coinsEarned = Math.max(0, finalCoinsLeft) + (avoidedScam ? 5 : 0);
     
     return (
       <div className="quest-card quest-card-result">
@@ -332,12 +330,8 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
         
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-value">🪙 {finalCoinsLeft}</div>
-            <div className="stat-label">Coins left</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">⭐ +{xpGained}</div>
-            <div className="stat-label">XP earned</div>
+            <div className="stat-value">🪙 +{coinsEarned}</div>
+            <div className="stat-label">Coins earned</div>
           </div>
         </div>
         

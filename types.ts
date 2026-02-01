@@ -1,7 +1,6 @@
 export interface User {
   username: string;
   email: string;
-  xp: number;
   coins: number;
   streak: number;
   completedLevels: number[];
@@ -32,7 +31,6 @@ export interface NPC {
     correctAnswerIndex: number;
     explanation: string;
     reward: {
-      xp: number;
       coins: number;
     };
   };
@@ -44,7 +42,6 @@ export interface Scenario {
   correctAnswerIndex: number;
   explanation: string;
   reward: {
-    xp: number;
     coins: number;
   };
 }

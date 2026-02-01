@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
-import logo from '/assets/WealthSimpleLogo.svg';
+import { SproutLogo } from './SproutLogo';
 
 
 
@@ -9,11 +9,11 @@ interface AuthScreenProps {
 }
 
 // Reusable Logo Component
-const SproutLogo = () => (
-  <div className="flex items-center gap-2 select-none cursor-pointer">
-    <img src={logo} alt="Sprout Logo" className="h-10 w-auto" />
-  </div>
-);
+// const SproutLogo = () => (
+//   <div className="flex items-center gap-2 select-none cursor-pointer">
+//     <img src={logo} alt="Sprout Logo" className="h-10 w-auto" />
+//   </div>
+// );
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
   const [view, setView] = useState<'landing' | 'login' | 'signup'>('landing');
@@ -42,7 +42,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
       <div className="min-h-screen bg-sprout-bg flex flex-col font-sans relative overflow-hidden">
         {/* Navbar */}
         <header className="w-full py-6 px-4 sm:px-8 flex justify-between items-center max-w-7xl mx-auto z-10">
-          <SproutLogo />
+<SproutLogo className="h-10" />
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setView('login')}
@@ -108,9 +108,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
     <div className="min-h-screen bg-sprout-bg flex flex-col">
       {/* Header */}
       <header className="w-full py-6 px-4 sm:px-8 max-w-7xl mx-auto">
-        <div onClick={goHome}>
+        {/* <div onClick={goHome}>
           <SproutLogo />
-        </div>
+        </div> */}
+        <SproutLogo className="h-10" onClick={goHome} />
       </header>
 
       <main className="flex-1 flex items-center justify-center max-w-7xl mx-auto w-full px-4 sm:px-8 pb-12">

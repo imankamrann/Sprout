@@ -12,7 +12,6 @@ const PHASER_LEVELS = [1, 2, 3, 4];
 const MOCK_USER: User = {
   username: 'Guest',
   email: '',
-  xp: 120,
   coins: 50,
   streak: 3,
   completedLevels: []
@@ -42,20 +41,18 @@ const App: React.FC = () => {
     setCurrentView('dashboard');
   };
 
-  const handleUpdateUser = (xpEarned: number, coinsEarned: number) => {
+  const handleUpdateUser = (coinsEarned: number) => {
     if (!user) return;
     
     setUser(prev => {
       if (!prev) return null;
-      // If we finished a level (mock logic: simply by earning XP in the game view)
-      // In a real app, this would check specific win conditions.
+      // If we finished a level, mark it as completed
       const newCompletedLevels = activeLevel && !prev.completedLevels.includes(activeLevel) 
         ? [...prev.completedLevels, activeLevel] 
         : prev.completedLevels;
 
       return {
         ...prev,
-        xp: prev.xp + xpEarned,
         coins: prev.coins + coinsEarned,
         completedLevels: newCompletedLevels
       };
