@@ -1,180 +1,233 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GRID_SIZE, INITIAL_MAP, INITIAL_PLAYER_POS } from '../constants';
-import { GridPosition, TileType, Scenario } from '../types';
-import { generateFinancialScenario } from '../services/geminiService';
-import { QuizOverlay } from './QuizOverlay';
-import { Button } from './Button';
+import { User, GridPosition, TileType, NPC } from '../types';
+import { GRID_SIZE, INITIAL_MAP, INITIAL_PLAYER_POS, NPCS } from '../constants';
+import { StoryOverlay } from './StoryOverlay';
 
 interface GameArenaProps {
+  user: User;
+  levelId: number;
   onUpdateUser: (xpEarned: number, coinsEarned: number) => void;
   onExit: () => void;
 }
 
-export const GameArena: React.FC<GameArenaProps> = ({ onUpdateUser, onExit }) => {
+// Level titles mapping
+const LEVEL_TITLES: Record<number, string> = {
+  1: 'Saving Basics',
+  2: 'Needs vs Wants',
+  3: 'Earn & Spend',
+  4: 'Future Goals',
+};
+
+export const GameArena: React.FC<GameArenaProps> = ({ user, levelId, onUpdateUser, onExit }) => {
   const [playerPos, setPlayerPos] = useState<GridPosition>(INITIAL_PLAYER_POS);
-  const [direction, setDirection] = useState<'left' | 'right'>('right');
-  const [isQuizOpen, setIsQuizOpen] = useState(false);
-  const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [interactionAvailable, setInteractionAvailable] = useState(false);
+  const [map] = useState<TileType[][]>(INITIAL_MAP);
+  const [activeNpc, setActiveNpc] = useState<NPC | null>(null);
+  const [completedNpcs, setCompletedNpcs] = useState<Set<string>>(new Set());
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [feedbackType, setFeedbackType] = useState<'success' | 'error' | null>(null);
 
-  // Check if tile is walkable
-  const isWalkable = (x: number, y: number): boolean => {
+  // Filter NPCs for this level
+  const levelNpcs = NPCS.filter(npc => npc.levelId === levelId);
+  const totalExercises = levelNpcs.length;
+  const completedExercises = levelNpcs.filter(npc => completedNpcs.has(npc.id)).length;
+
+  const isWalkable = useCallback((x: number, y: number): boolean => {
     if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) return false;
-    const tile = INITIAL_MAP[y][x];
-    return tile === TileType.EMPTY || tile === TileType.START;
-  };
+    const tile = map[y]?.[x];
+    return tile !== TileType.WALL;
+  }, [map]);
 
-  // Check for adjacent shops
-  const checkInteraction = useCallback((pos: GridPosition) => {
-    const neighbors = [
-      { x: pos.x + 1, y: pos.y },
-      { x: pos.x - 1, y: pos.y },
-      { x: pos.x, y: pos.y + 1 },
-      { x: pos.x, y: pos.y - 1 },
-    ];
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (activeNpc || feedbackMessage) return;
 
-    const isNearShop = neighbors.some(n => 
-      n.x >= 0 && n.x < GRID_SIZE && n.y >= 0 && n.y < GRID_SIZE && INITIAL_MAP[n.y][n.x] === TileType.SHOP
-    );
-    
-    setInteractionAvailable(isNearShop);
-  }, []);
+    let newX = playerPos.x;
+    let newY = playerPos.y;
 
-  const handleMove = useCallback((dx: number, dy: number) => {
-    if (isQuizOpen || isLoading) return;
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'w':
+        newY -= 1;
+        break;
+      case 'ArrowDown':
+      case 's':
+        newY += 1;
+        break;
+      case 'ArrowLeft':
+      case 'a':
+        newX -= 1;
+        break;
+      case 'ArrowRight':
+      case 'd':
+        newX += 1;
+        break;
+      case ' ':
+      case 'Enter':
+        // Check for NPC interaction
+        const nearbyNpc = levelNpcs.find(
+          npc =>
+            !completedNpcs.has(npc.id) &&
+            Math.abs(npc.position.x - playerPos.x) <= 1 &&
+            Math.abs(npc.position.y - playerPos.y) <= 1
+        );
+        if (nearbyNpc) {
+          setActiveNpc(nearbyNpc);
+        }
+        return;
+      default:
+        return;
+    }
 
-    setPlayerPos(prev => {
-      const newX = prev.x + dx;
-      const newY = prev.y + dy;
-      
-      if (dx > 0) setDirection('right');
-      if (dx < 0) setDirection('left');
-
-      if (isWalkable(newX, newY)) {
-        const newPos = { x: newX, y: newY };
-        checkInteraction(newPos);
-        return newPos;
-      }
-      return prev;
-    });
-  }, [isQuizOpen, isLoading, checkInteraction]);
-
-  const triggerInteraction = async () => {
-    if (!interactionAvailable || isLoading) return;
-    
-    setIsLoading(true);
-    const scenario = await generateFinancialScenario();
-    setCurrentScenario(scenario);
-    setIsQuizOpen(true);
-    setIsLoading(false);
-  };
+    if (isWalkable(newX, newY)) {
+      setPlayerPos({ x: newX, y: newY });
+    }
+  }, [playerPos, activeNpc, feedbackMessage, isWalkable, levelNpcs, completedNpcs]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      switch(e.key) {
-        case 'ArrowUp': handleMove(0, -1); break;
-        case 'ArrowDown': handleMove(0, 1); break;
-        case 'ArrowLeft': handleMove(-1, 0); break;
-        case 'ArrowRight': handleMove(1, 0); break;
-        case ' ': // Spacebar
-        case 'Enter':
-          if (interactionAvailable) triggerInteraction();
-          break;
-        default: break;
-      }
-    };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleMove, interactionAvailable, isLoading]); // interactionAvailable in deps to trigger correct spacebar action
+  }, [handleKeyDown]);
 
-  const handleQuizComplete = (success: boolean, reward: { xp: number, coins: number }) => {
-    if (success) {
-      onUpdateUser(reward.xp, reward.coins);
+  const handleNpcComplete = (success: boolean, reward: { xp: number, coins: number }) => {
+    if (activeNpc) {
+      setCompletedNpcs(prev => new Set(prev).add(activeNpc.id));
+      
+      if (success) {
+        onUpdateUser(reward.xp, reward.coins);
+        setFeedbackMessage(`+${reward.xp} XP, +${reward.coins} coins!`);
+        setFeedbackType('success');
+      } else {
+        setFeedbackMessage('Try again next time!');
+        setFeedbackType('error');
+      }
+      
+      setActiveNpc(null);
+      
+      setTimeout(() => {
+        setFeedbackMessage(null);
+        setFeedbackType(null);
+      }, 2000);
     }
-    setTimeout(() => {
-        setIsQuizOpen(false);
-        setCurrentScenario(null);
-    }, 1500); // Give user time to see result
   };
 
+  const handleNpcClose = () => {
+    setActiveNpc(null);
+  };
+
+  const renderTile = (x: number, y: number, tileType: TileType) => {
+    const isPlayer = playerPos.x === x && playerPos.y === y;
+    const npcOnTile = levelNpcs.find(npc => npc.position.x === x && npc.position.y === y);
+    const isNpcCompleted = npcOnTile && completedNpcs.has(npcOnTile.id);
+    
+    // Checkered pattern: alternating light gray and white
+    const isLightTile = (x + y) % 2 === 0;
+    const bgColor = isLightTile ? 'bg-gray-200' : 'bg-gray-100';
+
+    return (
+      <div
+        key={`${x}-${y}`}
+        className={`aspect-square flex items-center justify-center ${bgColor} relative transition-all duration-150`}
+      >
+        {/* NPC */}
+        {npcOnTile && !isNpcCompleted && !isPlayer && (
+          <div className="text-2xl md:text-3xl animate-bounce z-10">
+            {npcOnTile.icon}
+          </div>
+        )}
+
+        {/* Completed NPC marker */}
+        {isNpcCompleted && !isPlayer && (
+          <div className="text-xl text-green-500 z-10">✓</div>
+        )}
+
+        {/* Player */}
+        {isPlayer && (
+          <div className="absolute inset-0 flex items-center justify-center z-20">
+            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-sprout-green shadow-lg flex items-center justify-center text-white font-bold text-xs md:text-sm border-2 border-white">
+              🧒
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const progressPercent = totalExercises > 0 ? (completedExercises / totalExercises) * 100 : 0;
+  const levelTitle = LEVEL_TITLES[levelId] || `Level ${levelId}`;
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] p-4 bg-gray-100">
-      
-      <div className="mb-4 flex justify-between w-full max-w-lg items-center">
-         <Button variant="outline" onClick={onExit} className="py-1 px-4 text-sm">← Exit Level</Button>
-         <div className="bg-white px-4 py-1 rounded-full text-sm font-bold shadow-sm">
-            Use Arrow Keys to Move
-         </div>
+    <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center p-4 md:p-8">
+      {/* Header: Back button + Title - Outside container */}
+      <div className="w-full max-w-3xl flex items-center gap-4 mb-4">
+        <button
+          onClick={onExit}
+          className="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
+          aria-label="Go back"
+        >
+          <span className="text-gray-600 text-xl">←</span>
+        </button>
+        <h1 className="text-2xl font-bold text-gray-800">{levelTitle}</h1>
       </div>
 
-      <div className="relative bg-white p-2 rounded-xl shadow-2xl border-4 border-gray-300">
-        <div 
-          className="grid relative"
-          style={{ 
-            gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))`,
-            width: 'min(90vw, 500px)',
-            height: 'min(90vw, 500px)',
-          }}
-        >
-          {/* Render Map */}
-          {INITIAL_MAP.map((row, y) => (
-            row.map((tile, x) => (
-              <div 
-                key={`${x}-${y}`} 
-                className={`
-                  w-full h-full border-[0.5px] border-gray-100
-                  ${tile === TileType.WALL ? 'bg-slate-700 shadow-inner' : ''}
-                  ${tile === TileType.EMPTY || tile === TileType.START ? ((x+y)%2===0 ? 'bg-white' : 'bg-blue-50') : ''}
-                  ${tile === TileType.SHOP ? 'bg-yellow-200 relative' : ''}
-                `}
-              >
-                {tile === TileType.WALL && <div className="w-full h-full opacity-30 bg-black/20"></div>}
-                {tile === TileType.SHOP && (
-                    <div className="absolute inset-0 flex items-center justify-center text-2xl">
-                        🏪
-                    </div>
-                )}
-              </div>
-            ))
-          ))}
+      {/* Main Game Container - White box with rounded corners */}
+      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg overflow-hidden">
+        {/* Progress Section - Inside container */}
+        <div className="px-6 pt-6 pb-4">
+          {/* Progress Bar */}
+          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
+            <div
+              className="h-full bg-sprout-green rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          {/* Exercise Counter */}
+          <p className="text-center text-gray-500 text-sm font-medium">
+            Exercise {Math.min(completedExercises + 1, totalExercises)} of {totalExercises}
+          </p>
+        </div>
 
-          {/* Player Entity */}
-          <div 
-            className="absolute transition-all duration-200 ease-out z-10 flex items-center justify-center"
+        {/* Grid Container */}
+        <div className="px-4 pb-4 flex justify-center">
+          <div
+            className="grid gap-0"
             style={{
-                width: `${100 / GRID_SIZE}%`,
-                height: `${100 / GRID_SIZE}%`,
-                left: `${(playerPos.x / GRID_SIZE) * 100}%`,
-                top: `${(playerPos.y / GRID_SIZE) * 100}%`,
+              gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
+              width: 'min(100%, 500px)',
+              aspectRatio: '1',
             }}
           >
-              <div className={`text-3xl filter drop-shadow-lg transform transition-transform ${direction === 'left' ? 'scale-x-[-1]' : ''}`}>
-                🐼
-              </div>
+            {map.map((row, y) =>
+              row.map((tile, x) => renderTile(x, y, tile))
+            )}
           </div>
         </div>
 
-        {/* Interaction Prompt Overlay */}
-        {interactionAvailable && !isQuizOpen && (
-             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-                <Button 
-                    onClick={triggerInteraction} 
-                    variant="primary" 
-                    className="animate-bounce shadow-xl"
-                >
-                    {isLoading ? 'Loading...' : 'PRESS SPACE TO SHOP'}
-                </Button>
-             </div>
-        )}
+        {/* Controls hint */}
+        <div className="px-6 pb-4">
+          <p className="text-center text-gray-400 text-xs">
+            Use arrow keys to move • Press Space near characters to talk
+          </p>
+        </div>
       </div>
 
-      {isQuizOpen && currentScenario && (
-        <QuizOverlay 
-          scenario={currentScenario} 
-          onComplete={handleQuizComplete}
-          onClose={() => setIsQuizOpen(false)}
+      {/* Feedback Toast */}
+      {feedbackMessage && (
+        <div
+          className={`fixed top-28 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg font-bold z-50 transition-all ${
+            feedbackType === 'success'
+              ? 'bg-green-100 text-green-700 border-2 border-green-300'
+              : 'bg-red-100 text-red-700 border-2 border-red-300'
+          }`}
+        >
+          {feedbackMessage}
+        </div>
+      )}
+
+      {/* Story Overlay */}
+      {activeNpc && (
+        <StoryOverlay
+          npc={activeNpc}
+          onComplete={handleNpcComplete}
+          onClose={handleNpcClose}
         />
       )}
     </div>

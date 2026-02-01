@@ -71,8 +71,10 @@ const App: React.FC = () => {
           <Dashboard user={user} onSelectLevel={handleSelectLevel} />
         )}
 
-        {currentView === 'game' && (
+        {currentView === 'game' && activeLevel !== null && (
           <GameArena 
+            user={user}
+            levelId={activeLevel}
             onUpdateUser={handleUpdateUser} 
             onExit={handleExitLevel} 
           />

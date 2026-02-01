@@ -15,8 +15,27 @@ export interface GridPosition {
 export enum TileType {
   EMPTY = 0,
   WALL = 1,
-  SHOP = 2,
+  PROP = 2, // Renamed from SHOP
   START = 3,
+  NPC = 4, // New type for NPCs
+}
+
+export interface NPC {
+  id: string;
+  name: string;
+  icon: string; // Emoji or image path
+  position: GridPosition;
+  levelId: number; // Which level this NPC belongs to
+  story: {
+    prompt: string;
+    options: { text: string; coins?: number }[];
+    correctAnswerIndex: number;
+    explanation: string;
+    reward: {
+      xp: number;
+      coins: number;
+    };
+  };
 }
 
 export interface Scenario {
