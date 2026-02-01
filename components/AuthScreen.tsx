@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
+import logo from '/assets/WealthSimpleLogo.svg';
+
+
 
 interface AuthScreenProps {
   onLogin: (username: string) => void;
@@ -8,16 +11,7 @@ interface AuthScreenProps {
 // Reusable Logo Component
 const SproutLogo = () => (
   <div className="flex items-center gap-2 select-none cursor-pointer">
-    <div className="relative w-8 h-8 md:w-10 md:h-10">
-       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-sprout-green">
-          <path d="M12.0002 19.5C12.0002 19.5 12.0002 12 8.50023 9.50001C5.00023 7.00001 2.00023 8.00001 2.00023 8.00001C2.00023 8.00001 1.00023 3.00001 6.50023 2.00001C12.0002 1.00001 12.0002 7.5 12.0002 7.5C12.0002 7.5 13.5002 0.5 19.0002 3.00001C24.5002 5.50001 21.5002 11.5 21.5002 11.5C21.5002 11.5 19.5002 12.5 16.5002 11C13.5002 9.5 12.5002 9.5 12.0002 12C11.5002 14.5 12.0002 19.5 12.0002 19.5Z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M12 19.5V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-       </svg>
-    </div>
-    <div className="flex items-baseline leading-none">
-      <span className="font-serif text-2xl md:text-3xl font-black text-gray-800 tracking-tight">Wealthsimple</span>
-      <span className="font-sans text-2xl md:text-3xl font-bold text-sprout-purple ml-1">Sprout</span>
-    </div>
+    <img src={logo} alt="Sprout Logo" className="h-10 w-auto" />
   </div>
 );
 

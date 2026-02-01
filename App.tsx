@@ -3,7 +3,11 @@ import { User } from './types';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { GameArena } from './components/GameArena';
+import { PhaserGameArena } from './components/game/PhaserGameArena';
 import { AuthScreen } from './components/AuthScreen';
+
+// Levels that use the Phaser-based game arena (store/shopping quests)
+const PHASER_LEVELS = [1];
 
 const MOCK_USER: User = {
   username: 'Guest',
@@ -72,12 +76,21 @@ const App: React.FC = () => {
         )}
 
         {currentView === 'game' && activeLevel !== null && (
-          <GameArena 
-            user={user}
-            levelId={activeLevel}
-            onUpdateUser={handleUpdateUser} 
-            onExit={handleExitLevel} 
-          />
+          PHASER_LEVELS.includes(activeLevel) ? (
+            <PhaserGameArena 
+              user={user}
+              levelId={activeLevel}
+              onUpdateUser={handleUpdateUser} 
+              onExit={handleExitLevel} 
+            />
+          ) : (
+            <GameArena 
+              user={user}
+              levelId={activeLevel}
+              onUpdateUser={handleUpdateUser} 
+              onExit={handleExitLevel} 
+            />
+          )
         )}
       </main>
     </div>
