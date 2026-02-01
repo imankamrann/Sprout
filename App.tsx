@@ -12,8 +12,8 @@ const PHASER_LEVELS = [1, 2, 3, 4];
 const MOCK_USER: User = {
   username: 'Guest',
   email: '',
-  coins: 50,
-  streak: 3,
+  coins: 0,
+  streak: 0,
   completedLevels: []
 };
 

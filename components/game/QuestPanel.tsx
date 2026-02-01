@@ -116,6 +116,13 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
     setBackpack((prev) => [...prev, item]);
   };
 
+  const removeFromBackpack = (index: number) => {
+    setBackpack((prev) => prev.filter((_, i) => i !== index));
+    setSelectedBackpack(null);
+    setMessage(null);
+    onPlaySound("click");
+  };
+
   const placeIntoSlot = (slot: SlotId) => {
     if (selectedBackpack === null) return;
     const item = backpack[selectedBackpack];
@@ -418,7 +425,15 @@ export const QuestPanel: React.FC<QuestPanelProps> = ({
           ))}
         </div>
         {selectedBackpack !== null && (
-          <div className="backpack-hint">Tap a slot below to place the item</div>
+          <div className="backpack-actions">
+            <span className="backpack-hint">Tap a slot to place, or</span>
+            <button 
+              className="remove-btn"
+              onClick={() => removeFromBackpack(selectedBackpack)}
+            >
+              ❌ Remove & Refund
+            </button>
+          </div>
         )}
       </div>
 

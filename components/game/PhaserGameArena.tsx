@@ -120,87 +120,88 @@ export const PhaserGameArena: React.FC<PhaserGameArenaProps> = ({
   const levelTitle = LEVEL_TITLES[levelId] || `Level ${levelId}`;
   const quest = useMemo(() => getQuestByLevel(levelId), [levelId]);
 
+  const showQuestPanel = stage !== "WORLD" && stage !== "DIALOGUE";
+
   return (
-    <div className="phaser-game-arena min-h-[calc(100vh-5rem)] p-4 md:p-2">
+    <div className="phaser-game-arena min-h-[calc(100vh-5rem)] p-4">
       {/* Header: Back button + Title */}
-      <div className="content-header max-w-4xl mx-auto">
+      <div className="content-header max-w-7xl mx-auto">
         <button className="back-button" onClick={onExit}>
           ←
         </button>
         <div className="content-title">{levelTitle}</div>
       </div>
 
-      {/* Game card */}
-      <div className="game-card max-w-xl mx-auto">
-        <div className="game-surface">
-          {/* <HudTiny
-            coins={player.coins}
-            questComplete={player.quest1Complete}
-          /> */}
-          {/* <QuestTracker stage={questStageNumber} total={4} /> */}
-          <PhaserGame
-            onNpcInteract={() => {
-              setDialogueIndex(0);
-              setStage("DIALOGUE");
-            }}
-          />
+      {/* Main Layout: Game on left, Quest panel on right */}
+      <div className={`game-layout max-w-7xl mx-auto ${showQuestPanel ? 'with-panel' : ''}`}>
+        {/* Game card - LEFT SIDE */}
+        <div className="game-card">
+          <div className="game-surface">
+            <PhaserGame
+              onNpcInteract={() => {
+                setDialogueIndex(0);
+                setStage("DIALOGUE");
+              }}
+            />
 
-          {toast && <div className="toast">{toast}</div>}
+            {toast && <div className="toast">{toast}</div>}
 
-          {stage === "DIALOGUE" && quest && (
-            <div className="overlay-backdrop">
-              <DialogueOverlay
-                line={quest.introLines[dialogueIndex]}
-                step={dialogueIndex}
-                totalSteps={quest.introLines.length}
-                onNext={() => {
-                  playSound("click");
-                  setDialogueIndex((prev) => prev + 1);
-                }}
-                onStart={() => {
-                  playSound("click");
-                  setStage("SHOP");
-                }}
-                onClose={() => setStage("WORLD")}
-              />
-            </div>
-          )}
+            {stage === "DIALOGUE" && quest && (
+              <div className="overlay-backdrop">
+                <DialogueOverlay
+                  line={quest.introLines[dialogueIndex]}
+                  step={dialogueIndex}
+                  totalSteps={quest.introLines.length}
+                  onNext={() => {
+                    playSound("click");
+                    setDialogueIndex((prev) => prev + 1);
+                  }}
+                  onStart={() => {
+                    playSound("click");
+                    setStage("SHOP");
+                  }}
+                  onClose={() => setStage("WORLD")}
+                />
+              </div>
+            )}
 
-          {stage !== "WORLD" && stage !== "DIALOGUE" && (
-            <div className="overlay-backdrop">
-              <QuestPanel
-                levelId={levelId}
-                stage={stage === "SHOP" ? "SHOP" : stage === "TWIST" ? "TWIST" : stage === "CHECKOUT" ? "CHECKOUT" : stage === "SCAM" ? "SCAM" : "RESULT"}
-                onStageChange={(next) => {
-                  if (next === "RESULT") {
-                    setStage("RESULT");
-                    setConfettiOn(true);
-                    setTimeout(() => setConfettiOn(false), 1000);
-                    return;
-                  }
-                  if (next === "WORLD") {
-                    setStage("WORLD");
-                    return;
-                  }
-                  setStage(next as QuestStage);
-                }}
-                onResult={(result) => {
-                  updatePlayer(result);
-                  playSound("coin");
-                }}
-                onPlaySound={playSound}
-              />
-            </div>
-          )}
-
-          {confettiOn && (
-            <div className="confetti">
-              {Array.from({ length: 16 }).map((_, i) => (
-                <span key={i} className="confetti-piece" />
-              ))}
-            </div>
-          )}
+            {confettiOn && (
+              <div className="confetti">
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <span key={i} className="confetti-piece" />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Quest Panel - RIGHT SIDE */}
+        {showQuestPanel && (
+          <div className="quest-panel-container">
+            <QuestPanel
+              levelId={levelId}
+              stage={stage === "SHOP" ? "SHOP" : stage === "TWIST" ? "TWIST" : stage === "CHECKOUT" ? "CHECKOUT" : stage === "SCAM" ? "SCAM" : "RESULT"}
+              onStageChange={(next) => {
+                if (next === "RESULT") {
+                  setStage("RESULT");
+                  setConfettiOn(true);
+                  setTimeout(() => setConfettiOn(false), 1000);
+                  return;
+                }
+                if (next === "WORLD") {
+                  setStage("WORLD");
+                  return;
+                }
+                setStage(next as QuestStage);
+              }}
+              onResult={(result) => {
+                updatePlayer(result);
+                playSound("coin");
+              }}
+              onPlaySound={playSound}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
